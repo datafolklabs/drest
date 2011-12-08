@@ -1,4 +1,119 @@
 
+from drest import interface
+
+def resource_validator(klass, obj):
+    """Validates a handler implementation against the IResource interface."""
+    members = [
+        'setup',
+        'get',
+        'create',
+        'update',
+        'delete', 
+        ]
+    interface.validate(IResource, obj, members)
+    
+class IResource(interface.Interface):
+    """
+    This class defines the Resource Handler Interface.  Classes that 
+    implement this handler must provide the methods and attributes defined 
+    below.
+    
+    All implementations must provide sane 'default' functionality when 
+    instantiated with no arguments.  Meaning, it can and should accept 
+    optional parameters that alter how it functions, but can not require
+    any parameters.  
+    
+    Implementations do *not* subclass from interfaces.
+            
+    """
+    
+    def setup():
+        """
+        The setup function is called during connection initialization and
+        must 'setup' the handler object making it ready for the connection
+        or the application to make further calls to it.
+        
+        Required Arguments:
+        
+            resource
+                The name of the resource.
+                
+            path
+                The path to the resource (after baseurl).
+                
+            request_handler
+                A request handler object.
+                
+        Returns: n/a
+        
+        """
+    
+    def get():
+        """
+        Get all members of the resource, or a single member given an id.
+        
+        Returns: response_obj, content_dict
+        
+        Optional Arguments:
+        
+            resource_id
+                An id, or possibly a unique label, of a specific resource
+                member.
+            
+            params
+                Additional GET parameters to pass.
+           
+        Returns: response_obj, content
+             
+        """
+        
+    def create():
+        """
+        Create a new resource using POST method to a resource.
+        
+        Optional Arguments:
+        
+            params:
+                POST parameters to pass.
+                
+        Returns: response_obj, content
+        
+        """
+    
+    def update():
+        """
+        Update an existing resource using PUT method.
+        
+        Required Arguments:
+        
+            resource_id
+                An id, or possibly a unique label, of a specific resource
+                member.
+            
+            params
+                Additional GET parameters to pass.
+                
+        Returns: response_obj, content
+        
+        """
+    
+    def delete():
+        """
+        Delete an existing resource using the DELETE method.
+        
+        Required Arguments:
+        
+            resource_id
+                An id, or possibly a unique label, of a specific resource
+                member.
+            
+            params
+                Additional GET parameters to pass.
+                
+        Returns: response_obj, content
+        
+        """
+        
 class RESTResource(object):
     def __init__(self):
         self.resource = None
@@ -6,10 +121,13 @@ class RESTResource(object):
         self.request_handler = None
         
     def setup(self, resource, path, request_handler):
-        self.request = request_handler.request
+        self.resource = resource
+        self.path = path
+        self.request_handler = request_handler
         
-    def request(self, method, params):
-        self.request_handler.request(method, self.path, params)
+    def request(self, method, path, params):
+        response, data = self.request_handler.request(method, path, params)
+        return response, data
         
     def filter(self, params):
         """
@@ -55,12 +173,7 @@ class RESTResource(object):
                 A dictionary of parameters (different for every resource).
 
         """
-        try:    
-            assert isinstance(params, dict), "params must be of type 'dict'."
-        except AssertionError, e:
-            raise exc.LandGrabInterfaceError, e.args[0]
-            
-        params = self._alter_params(params)
+        params = self.filter(params)
         path = '/%s' % self.resource
         res = self.request('POST', path, self.filter(params))
         return res
@@ -77,17 +190,8 @@ class RESTResource(object):
             params
                 A dictionary of parameters (different for every resource).
                 
-        """        
-        try:    
-            resource_id = int(resource_id)
-            assert isinstance(params, dict), "params must be of type 'dict'."
-        except AssertionError, e:
-            raise exc.LandGrabInterfaceError, e.args[0]
-        except ValueError, e:
-            raise exc.LandGrabInterfaceError, "resource id (int) required."
-    
-        params = self._alter_params(params)
-        params['id'] = resource_id
+        """            
+        params = self.filter(params)
         path = '/%s/%s' % (self.resource, resource_id)
         res = self.request('PUT', path, params)
         return res
@@ -110,14 +214,6 @@ class RESTResource(object):
                 (normally deletion only sets the status to 'Deleted').
             
         """
-        try:    
-            resource_id = int(resource_id)
-            assert isinstance(params, dict), "params must be of type 'dict'."
-        except AssertionError, e:
-            raise exc.LandGrabInterfaceError, e.args[0]
-        except ValueError, e:
-            raise exc.LandGrabInterfaceError, "resource id (int) required."
-
         path = '/%s/%s' % (self.resource, resource_id)
         res = self.request('DELETE', path, params)
         return res

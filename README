@@ -7,6 +7,35 @@ DESCRIPTION:
 
 dREST is a configurable HTTP/REST client library.  It's goal is to make 
 the creation of API clients easier and maximizing re-usable code.     
+
+USAGE:
+
+    from drest.connection import Connection
+
+    conn = Connection('http://localhost:8000/api/v0')
+    conn.auth(api_user='john.doe', api_key='XXXXXXXXXXXX')
+    
+    # make calls openly
+    response, data = conn.request('GET', '/user/2')
+    
+    # or attach a resource
+    conn.add_resource('user')
+    
+    # get all objects
+    response, data = conn.user.get()
+
+    for user in data['objects']:
+        print user['username']
+
+    # get a single object
+    response, data = conn.user.get(2)
+    
+    new_data = data.copy()
+    new_data['first_name'] = 'John'
+    new_data['last_name'] = 'Doe'
+    
+    response, data = conn.user.update(2, new_data)
+    
     
 LICENSE:
 

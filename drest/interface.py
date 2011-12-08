@@ -1,5 +1,5 @@
 
-from drest.core import exc
+from drest import exc
 
 class Interface(object):
     def __init__(self):
