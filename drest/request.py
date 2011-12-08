@@ -73,7 +73,7 @@ class HTTPRequestHandler(object):
         http = Http()               
         url = "%s/%s/" % (self.baseurl, path)
         if self.auth_params:
-            url = "%s?%s" % urlencode(self.auth_params)
+            url = "%s?%s" % (url, urlencode(self.auth_params))
             
         if self.debug:
             print 'DREST_DEBUG: %s?%s' % (url, data)

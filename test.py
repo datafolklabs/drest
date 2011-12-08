@@ -8,7 +8,6 @@ conn.auth(dmirr_api_user='derks',
 #res, data = conn.request('GET', '/user/2')
 conn.add_resource('user')
 res,data = conn.user.get()
-print data[0]
 
 for user in data['objects']:
     print "%s -> %s" % (user['username'], user['first_name'])
