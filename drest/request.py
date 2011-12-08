@@ -11,6 +11,7 @@ class HTTPRequestHandler(object):
         self.baseurl = None
         self.debug = False
         self.extra_params = {}
+        self.auth_params = {}
         self.extra_headers= {}
         
     def setup(self, baseurl, serialization_handler=None):
@@ -35,12 +36,12 @@ class HTTPRequestHandler(object):
     def auth(self, **kw):
         """
         In this implementation, we simply add any keywords passed to 
-        self.extra_params so that they are passed along with each request.
+        self.auth_params so that they are passed along with each request.
         For example, auth(user='john.doe', api_key='XXXXX').
                 
         """
         for key in kw:
-            self.add_param(key, kw[key])
+            self.auth_params = kw
         
     def request(self, method, path, params={}, headers={}):
         """
@@ -71,16 +72,16 @@ class HTTPRequestHandler(object):
             
         http = Http()               
         url = "%s/%s/" % (self.baseurl, path)
-        
+        if self.auth_params:
+            url = "%s?%s" % urlencode(self.auth_params)
+            
         if self.debug:
             print 'DREST_DEBUG: %s?%s' % (url, data)
             
         if self.serialization_handler: 
             payload = self.serialization_handler.dump(params)
-            print headers
             response, content = http.request(url, method, payload,
                                              headers=headers)
-            print response
             content = self.serialization_handler.load(content)
             response.unserialized_content = content
         else:
