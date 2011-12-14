@@ -104,10 +104,11 @@ class HTTPRequestHandler(object):
         
             if method == 'GET':
                 url = "%s?%s" % (url, payload)
+                
             response, content = http.request(url, method, payload,
                                              headers=headers)
             response.unserialized_content = content
-            
-        response.unserialized_content = content
+            print content
+
         return response, content
         

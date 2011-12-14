@@ -1,10 +1,11 @@
 
+import sys
 from drest.connection import Connection
 
 conn = Connection('http://localhost:8000/api/v0',
-                  deserialize=True)
+                  serialize=True)
 conn.auth(dmirr_api_user='derks', 
-          dmirr_api_key='837e2a86a66accf213cf1ddbe49d6c44f993c934')
+          dmirr_api_key='a851d9f6485bf27c3336775190e9da97d14c8083')
 #res, data = conn.request('GET', '/user/2')
 conn.add_resource('user')
 res,data = conn.user.get()
