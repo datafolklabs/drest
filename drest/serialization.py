@@ -88,13 +88,13 @@ class JsonSerializationHandler(object):
         try:
             return json.loads(serialized_string.strip('\n'))
         except ValueError, e:
-            raise exc.dRESTRequestError, e.args[0]
+            return dict(error=e.args[0])
     
     def dump(self, dict_obj):
         try:
             return json.dumps(dict_obj)
         except ValueError, e:
-            raise exc.dRESTRequestError, e.args[0]
+            return json.dumps(dict(error=e.args[0]))
             
 class YamlSerializationHandler(object):
     def __init__(self):

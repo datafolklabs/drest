@@ -2,8 +2,7 @@
 import sys
 from drest.connection import Connection
 
-conn = Connection('http://localhost:8000/api/v0',
-                  serialize=True)
+conn = Connection('http://localhost:8000/api/v0')
 conn.auth(dmirr_api_user='derks', 
           dmirr_api_key='a851d9f6485bf27c3336775190e9da97d14c8083')
 #res, data = conn.request('GET', '/user/2')
@@ -21,5 +20,5 @@ new_data['first_name'] = 'John'
 new_data['last_name'] = 'Doe'
 
 response, data = conn.user.update(2, new_data)
-print response.unserialized_content
+print response['status']
 #conn.user.get(1)

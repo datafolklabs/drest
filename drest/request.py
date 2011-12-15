@@ -13,10 +13,18 @@ class HTTPRequestHandler(object):
         self.extra_params = {}
         self.auth_params = {}
         self.extra_headers= {}
+        self.serialization_handler = None
+        self.serialize = False
+        self.deserialize = False
         
-    def setup(self, baseurl, serialization_handler=None):
+    def setup(self, baseurl, **kw):
         self.baseurl = baseurl.rstrip('/')
-        self.serialization_handler = serialization_handler
+        self.serialization_handler = kw.get('serialization_handler', None)
+        
+        if self.serialization_handler:
+            self.serialize = kw.get('serialize', True)
+            self.deserialize = kw.get('deserialize', True)
+        
         
         if os.environ.has_key('DREST_DEBUG') and \
            os.environ['DREST_DEBUG'] == '1':
@@ -78,12 +86,10 @@ class HTTPRequestHandler(object):
         if self.debug:
             print 'DREST_DEBUG: %s?%s' % (url, data)
             
-        if self.serialization_handler: 
+        if self.deserialize and self.serialization_handler: 
             payload = self.serialization_handler.dump(params)
             response, content = http.request(url, method, payload,
                                              headers=headers)
-            content = self.serialization_handler.load(content)
-            response.unserialized_content = content
         else:
             # Here we clean up the params a bit.  Nosne type doesn't transfer over 
             # HTTP_POST, and if the param is a python list we need to break that
@@ -108,7 +114,10 @@ class HTTPRequestHandler(object):
             response, content = http.request(url, method, payload,
                                              headers=headers)
             response.unserialized_content = content
-            print content
 
+        if self.serialize and self.serialization_handler:
+            response.unserialized_content = content
+            content = self.serialization_handler.load(content)
+    
         return response, content
         

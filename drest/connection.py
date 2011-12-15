@@ -9,6 +9,7 @@ class Connection(object):
                                                resource.RESTResource)
         self.serialization_handler = kw.get('serialization_handler', None)
         self.serialize = kw.get('serialize', True)
+        self.deserialize = kw.get('deserialize', True)
         self._setup()
         
     def _setup(self):
@@ -20,10 +21,12 @@ class Connection(object):
             self.request_handler = request.HTTPRequestHandler()
         #interface.validate(request.IRequest, self.request_handler)
         self.request_handler.setup(self.baseurl, 
-                                   serialization_handler=self.serialization_handler)
+                                   serialization_handler=self.serialization_handler,
+                                   serialize=self.serialize,
+                                   deserialize=self.deserialize)
         
     def _setup_serialization_handler(self):
-        if not self.serialize:
+        if not self.serialize and not self.deserialize:
             self.serialization_handler = None
             return
             
