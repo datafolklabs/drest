@@ -29,7 +29,7 @@ class HTTPRequestHandler(object):
            os.environ['DREST_DEBUG'] in [1, '1']:
             self.debug = True
             
-        if self.serialization_handler:
+        if self.serialize and self.serialization_handler:
             headers = self.serialization_handler.get_headers()
             for key in headers:
                 self.extra_headers[key] = headers[key]
@@ -87,7 +87,7 @@ class HTTPRequestHandler(object):
             print 'DREST_DEBUG: method=%s url=%s params=%s headers=%s' % (method, url, params, headers)
             print '---'
             
-        if self.deserialize and self.serialization_handler: 
+        if self.serialize and self.serialization_handler: 
             payload = self.serialization_handler.dump(params)
             response, content = http.request(url, method, payload,
                                              headers=headers)
