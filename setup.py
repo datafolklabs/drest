@@ -19,6 +19,7 @@ setup(name='drest',
     zip_safe=False,
     test_suite='nose.collector',
     install_requires=[
+        'httplib2',
         ### Required to build documentation
         # "Sphinx >= 1.0",
         ### Required for testing

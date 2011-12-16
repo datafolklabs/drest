@@ -114,7 +114,7 @@ class IResource(interface.Interface):
         
         """
         
-class RESTResource(object):
+class RESTResourceHandler(object):
     def __init__(self):
         self.resource = None
         self.path = None

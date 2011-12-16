@@ -6,7 +6,7 @@ class Connection(object):
         self.baseurl = baseurl
         self.request_handler = kw.get('request_handler', None)
         self.default_resource_handler = kw.get('default_resource_handler',
-                                               resource.RESTResource)
+                                               resource.RESTResourceHandler)
         self.serialization_handler = kw.get('serialization_handler', None)
         self.serialize = kw.get('serialize', True)
         self.deserialize = kw.get('deserialize', True)
@@ -19,7 +19,6 @@ class Connection(object):
     def _setup_request_handler(self):
         if not self.request_handler:
             self.request_handler = request.HTTPRequestHandler()
-        #interface.validate(request.IRequest, self.request_handler)
         self.request_handler.setup(self.baseurl, 
                                    serialization_handler=self.serialization_handler,
                                    serialize=self.serialize,
