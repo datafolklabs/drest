@@ -53,6 +53,5 @@ class Connection(object):
             handler = resource_handler
         resource.resource_validator(resource.IResource, handler)
         handler.setup(name, path, self.request_handler)
-        
         setattr(self, name, handler)
         

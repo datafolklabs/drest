@@ -25,9 +25,8 @@ class HTTPRequestHandler(object):
             self.serialize = kw.get('serialize', True)
             self.deserialize = kw.get('deserialize', True)
         
-        
         if os.environ.has_key('DREST_DEBUG') and \
-           os.environ['DREST_DEBUG'] == '1':
+           os.environ['DREST_DEBUG'] in [1, '1']:
             self.debug = True
             
         if self.serialization_handler:
@@ -84,7 +83,9 @@ class HTTPRequestHandler(object):
             url = "%s?%s" % (url, urlencode(self.auth_params))
             
         if self.debug:
-            print 'DREST_DEBUG: %s?%s' % (url, data)
+            print '---'
+            print 'DREST_DEBUG: method=%s url=%s params=%s headers=%s' % (method, url, params, headers)
+            print '---'
             
         if self.deserialize and self.serialization_handler: 
             payload = self.serialization_handler.dump(params)

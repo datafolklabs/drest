@@ -156,9 +156,9 @@ class RESTResourceHandler(object):
         """
 
         if resource_id:
-            path = '/%s/%s' % (self.resource, resource_id)
+            path = '/%s/%s' % (self.path, resource_id)
         else:
-            path = '/%s' % self.resource
+            path = '/%s' % self.path
             
         res = self.request('GET', path, params=self.filter(params))
         return res
@@ -174,7 +174,7 @@ class RESTResourceHandler(object):
 
         """
         params = self.filter(params)
-        path = '/%s' % self.resource
+        path = '/%s' % self.path
         res = self.request('POST', path, self.filter(params))
         return res
         
@@ -192,7 +192,7 @@ class RESTResourceHandler(object):
                 
         """            
         params = self.filter(params)
-        path = '/%s/%s' % (self.resource, resource_id)
+        path = '/%s/%s' % (self.path, resource_id)
         res = self.request('PUT', path, params)
         return res
         
@@ -214,6 +214,6 @@ class RESTResourceHandler(object):
                 (normally deletion only sets the status to 'Deleted').
             
         """
-        path = '/%s/%s' % (self.resource, resource_id)
+        path = '/%s/%s' % (self.path, resource_id)
         res = self.request('DELETE', path, params)
         return res
