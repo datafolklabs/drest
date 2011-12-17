@@ -1,7 +1,7 @@
 
 from drest import interface, exc
 
-def serialize_validator(klass, obj):
+def validate(obj):
     """Validates a handler implementation against the ISerialize interface."""
     members = [
         'setup',

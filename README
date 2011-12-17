@@ -13,6 +13,9 @@ USAGE:
     from drest.connection import Connection
 
     conn = Connection('http://localhost:8000/api/v0')
+    
+    # by default, auth() just appends its params to the URL so name the
+    # parameters however you want them passed as.
     conn.auth(api_user='john.doe', api_key='XXXXXXXXXXXX')
     
     # make calls openly
@@ -34,7 +37,7 @@ USAGE:
     new_data['first_name'] = 'John'
     new_data['last_name'] = 'Doe'
     
-    response, data = conn.user.update(2, new_data)
+    response, data = conn.user.update(data['id'], new_data)
     
     
 LICENSE:
