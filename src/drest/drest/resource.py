@@ -1,5 +1,5 @@
 
-from drest import interface
+from drest import interface, exc
 
 def resource_validator(klass, obj):
     """Validates a handler implementation against the IResource interface."""
@@ -160,8 +160,15 @@ class RESTResourceHandler(object):
         else:
             path = '/%s' % self.path
             
-        res = self.request('GET', path, params=self.filter(params))
-        return res
+        try:
+            response, content = self.request('GET', path, 
+                                             params=self.filter(params))
+        except exc.dRestRequestError as e:
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self.resource, 
+                                                 resource_id)
+            raise exc.dRestRequestError(msg, e.response, e.content)
+                                        
+        return response, content
     
     def create(self, params={}):
         """A synonym for self.post()."""
@@ -179,8 +186,14 @@ class RESTResourceHandler(object):
         """
         params = self.filter(params)
         path = '/%s' % self.path
-        res = self.request('POST', path, self.filter(params))
-        return res
+        
+        try:
+            response, content = self.request('POST', path, self.filter(params))
+        except exc.dRestRequestError as e:
+            msg = "%s (resource: %s)" % (e.msg, self.resource)
+            raise exc.dRestRequestError(msg, e.response, e.content)
+            
+        return response, content
         
     def update(self, resource_id, params={}):
         """A synonym for self.put()."""
@@ -201,8 +214,15 @@ class RESTResourceHandler(object):
         """            
         params = self.filter(params)
         path = '/%s/%s' % (self.path, resource_id)
-        res = self.request('PUT', path, params)
-        return res
+        
+        try:
+            response, content = self.request('PUT', path, params)
+        except exc.dRestRequestError as e:
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self.resource, 
+                                                 resource_id)
+            raise exc.dRestRequestError(msg, e.response, e.content)
+            
+        return response, content
         
     def delete(self, resource_id, params={}):
         """
@@ -223,5 +243,11 @@ class RESTResourceHandler(object):
             
         """
         path = '/%s/%s' % (self.path, resource_id)
-        res = self.request('DELETE', path, params)
-        return res
+        try:
+            response, content = self.request('DELETE', path, params)
+        except exc.dRestRequestError as e:
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self.resource, 
+                                                 resource_id)
+            raise exc.dRestRequestError(msg, e.response, e.content)
+            
+        return respone, content
