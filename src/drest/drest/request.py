@@ -1,5 +1,7 @@
 
 import os
+import httplib
+import socket
 from httplib2 import Http
 from urllib import urlencode
 from urllib2 import urlopen
@@ -17,6 +19,7 @@ def validate(obj):
         'extra_params',
         'extra_headers',
         'serialization_handler',
+        'handle_response',
         ]
     interface.validate(IRequest, obj, members)
     
@@ -39,7 +42,7 @@ class IRequest(interface.Interface):
     auth_params = interface.Attribute('Auth parameters to attach to the url.')
     extra_headers = interface.Attribute('Headers to pass with each request.')
     serialization_handler = interface.Attribute('Serialization handler object')
-    response_handler = interface.Attribute('Response handler object')
+    #response_handler = interface.Attribute('Response handler object')
     
     def setup(baseurl, **kw):
         """
@@ -62,9 +65,6 @@ class IRequest(interface.Interface):
             
             serialization_handler
                 The class with which to handle serialization.
-            
-            response_handler
-                The class with which to pass response,content to.
                 
         Returns: n/a
         
@@ -129,12 +129,20 @@ class IRequest(interface.Interface):
                 Headers to pass to the request.
                 
         """
-class HTTPRequestHandler(object):
+    
+    def handle_response(response, content):
+        """
+        Called after the request is made.  This is a convenient place for
+        developers to handle what happens during every request per their
+        application needs.
+                
+        """
+        
+class RequestHandler(object):
     extra_params = {}
     auth_params = {}
     extra_headers= {}
     serialization_handler = None
-    response_handler = None
     
     def __init__(self):
         self.baseurl = None
@@ -145,7 +153,6 @@ class HTTPRequestHandler(object):
     def setup(self, baseurl, **kw):
         self.baseurl = baseurl.rstrip('/')
         self.serialization_handler = kw.get('serialization_handler', None)
-        self.response_handler = kw.get('response_handler', None)
         
         if self.serialization_handler:
             self.serialize = kw.get('serialize', True)
@@ -175,7 +182,14 @@ class HTTPRequestHandler(object):
         """
         for key in kw:
             self.auth_params = kw
-        
+       
+    def _make_request(self, url, method, payload={}, headers={}): 
+        try:
+            http = Http()
+            return http.request(url, method, payload, headers=headers)
+        except socket.error as e:
+            raise exc.dRestConnectionError(e.args[1])
+            
     def request(self, method, path, params={}, headers={}):
         """
         Make a call to a resource based on path, and parameters.
@@ -202,8 +216,7 @@ class HTTPRequestHandler(object):
         
         for key in self.extra_headers:
             headers[key] = self.extra_headers[key]
-            
-        http = Http()               
+                
         url = "%s/%s/" % (self.baseurl, path)
         if self.auth_params:
             url = "%s?%s" % (url, urlencode(self.auth_params))
@@ -216,8 +229,8 @@ class HTTPRequestHandler(object):
             
         if self.serialize and self.serialization_handler: 
             payload = self.serialization_handler.dump(params)
-            response, content = http.request(url, method, payload,
-                                             headers=headers)
+            response, content = self._make_request(url, method, payload,
+                                                   headers=headers)
         else:
             # Here we clean up the params a bit.  Nosne type doesn't transfer over 
             # HTTP_POST, and if the param is a python list we need to break that
@@ -239,21 +252,40 @@ class HTTPRequestHandler(object):
             if method == 'GET':
                 url = "%s?%s" % (url, payload)
                 
-            response, content = http.request(url, method, payload,
-                                             headers=headers)
-            response['unserialized_content'] = content
+            response, content = self._make_request(url, method, payload,
+                                                   headers=headers)
+            response.unserialized_content = content
 
         if self.serialize and self.serialization_handler:
-            response['unserialized_content'] = content
+            response.unserialized_content = content
             content = self.serialization_handler.load(content)
     
-        response['method'] = method
-        response['payload'] = payload
-        response['url'] = url
-        response['path'] = path
+        response.method = method
+        response.payload = payload
+        response.url = url
 
-        if self.response_handler:
-            return self.response_handler.handle_response(response, content)
-        else:
-            return response, content
+        self.handle_response(response, content)
+        return response, content
+    
+    def handle_response(self, response, content):
+        """
+        A simple wrapper to handle the response.  Be default raises 
+        exc.dRestRequestError if the response code is within 400-499, or 500.
         
+        Required Arguments:
+        
+            response
+                The response object.
+                
+            content
+                The response content.
+        """
+        if (400 <= response.status <=499) or (response.status == 500):
+            msg = "Received HTTP Code %s - %s" % (
+                   response.status, 
+                   httplib.responses[int(response.status)])
+            raise exc.dRestRequestError(
+                msg, response=response, content=content
+                )
+
+        return (response, content)

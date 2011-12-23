@@ -1,5 +1,5 @@
 
-from drest import interface, resource, request, serialization, response
+from drest import interface, resource, request, serialization
 
 class Connection(object):
     def __init__(self, baseurl, **kw):
@@ -8,31 +8,30 @@ class Connection(object):
         self.default_resource_handler = kw.get('default_resource_handler',
                                                resource.RESTResourceHandler)
         self.serialization_handler = kw.get('serialization_handler', None)
-        self.response_handler = kw.get('response_handler', None)
+        #self.response_handler = kw.get('response_handler', None)
         self.serialize = kw.get('serialize', True)
         self.deserialize = kw.get('deserialize', True)
         self._setup()
         
     def _setup(self):
         self._setup_serialization_handler()
-        self._setup_response_handler()
+        #self._setup_response_handler()
         self._setup_request_handler()
         
     def _setup_request_handler(self):
         if not self.request_handler:
-            self.request_handler = request.HTTPRequestHandler()
+            self.request_handler = request.RequestHandler()
         request.validate(self.request_handler)
         self.request_handler.setup(self.baseurl, 
                                    serialization_handler=self.serialization_handler,
                                    serialize=self.serialize,
-                                   deserialize=self.deserialize,
-                                   response_handler=self.response_handler)
+                                   deserialize=self.deserialize)
     
-    def _setup_response_handler(self):
-        if not self.response_handler:
-            self.response_handler = response.ResponseHandler()
-        response.validate(self.response_handler)
-        self.response_handler.setup()
+    #def _setup_response_handler(self):
+    #    if not self.response_handler:
+    #        self.response_handler = response.ResponseHandler()
+    #    response.validate(self.response_handler)
+    #    self.response_handler.setup()
         
     def _setup_serialization_handler(self):
         if not self.serialize and not self.deserialize:

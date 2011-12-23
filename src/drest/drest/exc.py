@@ -1,5 +1,5 @@
 
-class dRESTError(Exception):
+class dRestError(Exception):
     def __init__(self, msg):
         self.msg = msg
     
@@ -9,12 +9,16 @@ class dRESTError(Exception):
     def __str__(self):
         return self.msg
     
-class dRESTInterfaceError(dRESTError):
+class dRestInterfaceError(dRestError):
     pass
 
-class dRESTRequestError(dRESTError):
-    pass
-
-class dRESTConnectError(dRESTError):
+class dRestRequestError(dRestError):
+    def __init__(self, msg, response, content):
+        self.msg = msg
+        self.response = response
+        self.content = content
+        super(dRestRequestError, self).__init__(msg)
+        
+class dRestConnectionError(dRestError):
     pass
         
