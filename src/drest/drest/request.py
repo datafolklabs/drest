@@ -241,12 +241,17 @@ class HTTPRequestHandler(object):
                 
             response, content = http.request(url, method, payload,
                                              headers=headers)
-            response.unserialized_content = content
+            response['unserialized_content'] = content
 
         if self.serialize and self.serialization_handler:
-            response.unserialized_content = content
+            response['unserialized_content'] = content
             content = self.serialization_handler.load(content)
     
+        response['method'] = method
+        response['payload'] = payload
+        response['url'] = url
+        response['path'] = path
+
         if self.response_handler:
             return self.response_handler.handle_response(response, content)
         else:

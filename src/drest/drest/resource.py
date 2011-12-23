@@ -6,8 +6,8 @@ def resource_validator(klass, obj):
     members = [
         'setup',
         'get',
-        'create',
-        'update',
+        'post',
+        'put',
         'delete', 
         ]
     interface.validate(IResource, obj, members)
@@ -67,7 +67,7 @@ class IResource(interface.Interface):
              
         """
         
-    def create():
+    def post():
         """
         Create a new resource using POST method to a resource.
         
@@ -80,7 +80,7 @@ class IResource(interface.Interface):
         
         """
     
-    def update():
+    def put():
         """
         Update an existing resource using PUT method.
         
@@ -91,7 +91,7 @@ class IResource(interface.Interface):
                 member.
             
             params
-                Additional GET parameters to pass.
+                Additional parameters to pass.
                 
         Returns: response_obj, content
         
@@ -164,6 +164,10 @@ class RESTResourceHandler(object):
         return res
     
     def create(self, params={}):
+        """A synonym for self.post()."""
+        return self.post(params)
+        
+    def post(self, params={}):
         """
         Create a new resource.
         
@@ -179,6 +183,10 @@ class RESTResourceHandler(object):
         return res
         
     def update(self, resource_id, params={}):
+        """A synonym for self.put()."""
+        return self.post(resource_id, params)
+        
+    def put(self, resource_id, params={}):
         """
         Update an existing resource.
         
