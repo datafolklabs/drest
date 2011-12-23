@@ -84,7 +84,7 @@ class IRequest(interface.Interface):
                 
         """
         
-    def add_param(key, value):
+    def add_header(key, value):
         """
         Add extra headers to pass along with *every* request.
         
@@ -139,8 +139,8 @@ class IRequest(interface.Interface):
         """
         
 class RequestHandler(object):
-    extra_params = {}
     auth_params = {}
+    extra_params = {}
     extra_headers= {}
     serialization_handler = None
     
