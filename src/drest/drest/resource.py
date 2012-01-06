@@ -197,7 +197,7 @@ class RESTResourceHandler(object):
         
     def update(self, resource_id, params={}):
         """A synonym for self.put()."""
-        return self.post(resource_id, params)
+        return self.put(resource_id, params)
         
     def put(self, resource_id, params={}):
         """

@@ -5,14 +5,14 @@ AUTHOR: BJ Dierkes <wdierkes@5dollarwhitebox.org>
 
 DESCRIPTION:
 
-dREST is a configurable HTTP/REST client library.  It's goal is to make 
+dRest is a configurable HTTP/REST client library.  It's goal is to make 
 the creation of API clients easier and maximizing re-usable code.     
 
 USAGE:
 
-    from drest.connection import Connection
+    import drest
 
-    conn = Connection('http://localhost:8000/api/v0')
+    conn = drest.Connection('http://localhost:8000/api/v1/')
     
     # by default, auth() just appends its params to the URL so name the
     # parameters however you want them passed as.
@@ -24,15 +24,16 @@ USAGE:
     # or attach a resource
     conn.add_resource('user')
     
-    # get all objects
+    # get all resource objects
     response, data = conn.user.get()
 
     for user in data['objects']:
         print user['username']
 
-    # get a single object
+    # get a single resource object
     response, data = conn.user.get(2)
     
+    # update a resource
     new_data = data.copy()
     new_data['first_name'] = 'John'
     new_data['last_name'] = 'Doe'
@@ -42,5 +43,5 @@ USAGE:
     
 LICENSE:
 
-The dREST library is Open Source and is distributed under the BSD License 
+The dRest library is Open Source and is distributed under the BSD License 
 (three clause).  Please see the LICENSE file included with this software.  
