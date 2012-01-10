@@ -250,4 +250,4 @@ class RESTResourceHandler(object):
                                                  resource_id)
             raise exc.dRestRequestError(msg, e.response, e.content)
             
-        return respone, content
+        return response, content
