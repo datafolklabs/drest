@@ -20,7 +20,7 @@ USAGE:
     api.auth(api_user='john.doe', password='XXXXXXXXXXXX')
     
     # Make calls openly
-    response, data = api.request('GET', '/users/2')
+    response, data = api.request('GET', '/users/1/')
     
     # Or attach a resource
     api.add_resource('users')
@@ -31,19 +31,16 @@ USAGE:
     # Get all objects of a resource
     response, objects = api.users.get()
     
-    # Get a single resource
+    # Get a single resource with primary key '1'
     response, object = api.users.get(1)
     
-    # Filter resources (per available TastyPie filtering options set)
-    response, objects = api.users.get(icontains='admin')
-    
-    # Update a resource
+    # Update a resource with primary key '1'
     response, data = api.users.get(1)
     updated_data = data.copy()
     updated_data['first_name'] = 'John'
     updated_data['last_name'] = 'Doe'
     
-    response, object = api.users.update(1, updated_data)
+    response, object = api.users.update(data['id'], updated_data)
     
     # Create a resource
     user_data = dict(
@@ -52,9 +49,9 @@ USAGE:
                     first_name='John',
                     last_name'Doe',
                     )
-    response, data = api.users.create(1, user_data)
+    response, data = api.users.create(user_data)
     
-    # Delete a resource
+    # Delete a resource with primary key '1'
     response, data = api.users.delete(1)
     
     

@@ -3,6 +3,69 @@
 from drest import interface, resource, request, serialization, meta, exc
 
 class API(meta.MetaMixin):
+    """
+    Required Arguments:
+    
+        baseurl
+            The base url to the API endpoint.
+            
+    Optional Arguments and Meta:
+        
+        request
+            The Request Handler class that handles requests
+            
+        resource
+            The Resource handler class that handles resources.
+            
+            
+    Usage
+    
+    .. code-block:: python
+    
+        import drest
+
+        # Create a generic client api object
+        api = drest.API('http://localhost:8000/api/v1/')
+    
+        # By default, auth() just appends its params to the URL so name the
+        # parameters however you want them passed as.
+        api.auth(api_user='john.doe', password='XXXXXXXXXXXX')
+    
+        # Make calls openly
+        response, data = api.request('GET', '/users/1/')
+    
+        # Or attach a resource
+        api.add_resource('users')
+    
+        # Get available resources
+        api.resources
+    
+        # Get all objects of a resource
+        response, objects = api.users.get()
+    
+        # Get a single resource with primary key '1'
+        response, object = api.users.get(1)
+    
+        # Update a resource with primary key '1'
+        response, data = api.users.get(1)
+        updated_data = data.copy()
+        updated_data['first_name'] = 'John'
+        updated_data['last_name'] = 'Doe'
+    
+        response, object = api.users.update(data['id'], updated_data)
+    
+        # Create a resource
+        user_data = dict(
+                        username='john.doe',
+                        password'oober-secure-password',
+                        first_name='John',
+                        last_name'Doe',
+                        )
+        response, data = api.users.create(user_data)
+    
+        # Delete a resource with primary key '1'
+        response, data = api.users.delete(1)
+    """
     class Meta:
         baseurl = None
         request = request.RequestHandler
@@ -10,7 +73,7 @@ class API(meta.MetaMixin):
 
     resources = []
     
-    def __init__(self, baseurl=None, **kw):
+    def __init__(self, baseurl, **kw):
         kw['baseurl'] = kw.get('baseurl', baseurl)
         super(API, self).__init__(**kw)        
         self._request = self._meta.request(baseurl=self._meta.baseurl)
@@ -51,15 +114,14 @@ class API(meta.MetaMixin):
 class TastyPieAPI(API):
     """
     This class implements an API client, specifically tailored for
-    interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest`_.
+    interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
     
     Authentication Mechanisms
-    ^^^^^^^^^^^^^^^^^^^^^^^^^
     
     Currently the only supported authentication mechanizm is ApiKey.
     
+    
     Usage
-    ^^^^^
     
     Please note that the following example use ficticious resource data.  
     What is returned, and sent to the API is unique to the API itself.  Please
@@ -72,37 +134,8 @@ class TastyPieAPI(API):
         api = drest.api.TastyPieAPI('http://localhost:8000/api/v0/')
         api.auth(user='john.doe', api_key='34547a497326dde80bcaf8bcee43e3d1b5f24cc9')
         
-        # Get available resources (auto-detected by default)
-        api.resources
         
-        # Get all objects of a resource
-        response, objects = api.users.get()
-        
-        # Get a single resource
-        response, object = api.users.get(1)
-        
-        # Filter resources (per available TastyPie filtering options set)
-        response, objects = api.users.get(icontains='admin')
-        
-        # Update a resource
-        response, data = api.users.get(1)
-        updated_data = data.copy()
-        updated_data['first_name'] = 'John'
-        updated_data['last_name'] = 'Doe'
-        
-        response, object = api.users.update(1, updated_data)
-        
-        # Create a resource
-        user_data = dict(
-                        username='john.doe',
-                        password'oober-secure-password',
-                        first_name='John',
-                        last_name'Doe',
-                        )
-        response, data = api.users.create(1, user_data)
-        
-        # Delete a resource
-        response, data = api.users.delete(1)
+    See drest.api.API for more usage examples.
         
     """
     class Meta:
@@ -112,7 +145,7 @@ class TastyPieAPI(API):
         auth_mech = 'api_key'
         auth_mechanizms = ['api_key']
         
-    def __init__(self, baseurl=None, **kw):
+    def __init__(self, baseurl, **kw):
         super(TastyPieAPI, self).__init__(baseurl, **kw)
         if self._meta.auto_detect_resources:
             self.find_resources()
