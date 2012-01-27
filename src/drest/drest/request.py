@@ -6,19 +6,19 @@ from httplib2 import Http
 from urllib import urlencode
 from urllib2 import urlopen
 
-from drest import exc, interface
+from drest import exc, interface, meta, serialization
 
 def validate(obj):
     """Validates a handler implementation against the ISerialize interface."""
     members = [
-        'setup',
         'add_param',
+        'add_url_param',
         'add_header',
         'auth',
         'request',
         'extra_params',
+        'extra_url_params',
         'extra_headers',
-        'serialization_handler',
         'handle_response',
         ]
     interface.validate(IRequest, obj, members)
@@ -38,37 +38,9 @@ class IRequest(interface.Interface):
             
     """
     
-    extra_params = interface.Attribute('Parameters to pass with each request.')
-    auth_params = interface.Attribute('Auth parameters to attach to the url.')
+    extra_params = interface.Attribute('Parameters to attach to the request data.')
+    extra_url_params = interface.Attribute('Parameters to attach to the url.')
     extra_headers = interface.Attribute('Headers to pass with each request.')
-    serialization_handler = interface.Attribute('Serialization handler object')
-    #response_handler = interface.Attribute('Response handler object')
-    
-    def setup(baseurl, **kw):
-        """
-        The setup function is called during connection initialization and
-        must 'setup' the handler object making it ready for the connection
-        or the application to make further calls to it.
-        
-        Required Arguments:
-        
-            baseurl
-                The base url of the upstream API.
-                
-        Optional Arguments:
-        
-            serialize
-                Whether or not to serialize the request parameters.
-            
-            deserialize
-                Whether or not to deserialize the response content.
-            
-            serialization_handler
-                The class with which to handle serialization.
-                
-        Returns: n/a
-        
-        """
     
     def add_param(key, value):
         """
@@ -138,57 +110,66 @@ class IRequest(interface.Interface):
                 
         """
         
-class RequestHandler(object):
-    auth_params = {}
-    extra_params = {}
-    extra_headers= {}
-    serialization_handler = None
+class RequestHandler(meta.MetaMixin):
+    """
+    Generic class that handles HTTP requests.
     
-    def __init__(self):
-        self.baseurl = None
-        self.debug = False
-        self.serialize = False
-        self.deserialize = False
+    """
+    class Meta:
+        baseurl = None
+        debug = False
+        serialization = serialization.JsonSerializationHandler
+        serialize = False
+        deserialize = True
+    
+    extra_params = {}
+    extra_url_params = {}
+    extra_headers= {}
+    
+    def __init__(self, **kw):
+        super(RequestHandler, self).__init__(**kw)
         
-    def setup(self, baseurl, **kw):
-        self.baseurl = baseurl.rstrip('/')
-        self.serialization_handler = kw.get('serialization_handler', None)
-        
-        if self.serialization_handler:
-            self.serialize = kw.get('serialize', True)
-            self.deserialize = kw.get('deserialize', True)
+        self._meta.baseurl = self._meta.baseurl.rstrip('/')
         
         if os.environ.has_key('DREST_DEBUG') and \
            os.environ['DREST_DEBUG'] in [1, '1']:
-            self.debug = True
+            self._meta.debug = True
+        
+        if not self._meta.serialization:
+            self._meta.serialize = False
+            self._meta.deserialize = False
             
-        if self.serialize and self.serialization_handler:
-            headers = self.serialization_handler.get_headers()
+        else:
+            self._serialization = self._meta.serialization()
+            headers = self._serialization.get_headers()
             for key in headers:
                 self.extra_headers[key] = headers[key]
-                
+                   
     def add_param(self, key, value):
         self.extra_params[key] = value
     
+    def add_url_param(self, key, value):
+        self.extra_url_params[key] = value
+        
     def add_header(self, key, value):
         self.extra_headers[key] = value
             
     def auth(self, **kw):
         """
         In this implementation, we simply add any keywords passed to 
-        self.auth_params so that they are passed along with each request.
-        For example, auth(user='john.doe', api_key='XXXXX').
+        self.extra_url_params so that they are passed along with each request
+        in the url. For example, auth(user='john.doe', api_key='XXXXX').
                 
         """
         for key in kw:
-            self.auth_params = kw
+            self.add_url_param(key, kw[key])
        
     def _make_request(self, url, method, payload={}, headers={}): 
         try:
             http = Http()
             return http.request(url, method, payload, headers=headers)
         except socket.error as e:
-            raise exc.dRestConnectionError(e.args[1])
+            raise exc.dRestAPIError(e.args[1])
             
     def request(self, method, path, params={}, headers={}):
         """
@@ -209,56 +190,44 @@ class RequestHandler(object):
                 Dictionary of keyword arguments.
             
         """        
-        path = path.strip('/')
-        
+        path = path.lstrip('/').rstrip('/')
         for key in self.extra_params:
             params[key] = self.extra_params[key]
         
         for key in self.extra_headers:
             headers[key] = self.extra_headers[key]
                 
-        url = "%s/%s/" % (self.baseurl, path)
-        if self.auth_params:
-            url = "%s?%s" % (url, urlencode(self.auth_params))
+        if path == '':
+            url = self._meta.baseurl
+        else:
+            url = "%s/%s/" % (self._meta.baseurl, path)
+
+        if method == 'GET':
+            for key in params:
+                self.add_url_param(key, params[key])
+                
+        if self.extra_url_params:
+            url = "%s?%s" % (url, urlencode(self.extra_url_params))
             
-        if self.debug:
+        if self._meta.debug:
             print '---'
             print 'DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
                    (method, url, params, headers)
             print '---'
             
-        if self.serialize and self.serialization_handler: 
-            payload = self.serialization_handler.dump(params)
+        if self._meta.serialize: 
+            payload = self._serialization.serialize(params)
             response, content = self._make_request(url, method, payload,
                                                    headers=headers)
         else:
-            # Here we clean up the params a bit.  Nosne type doesn't transfer over 
-            # HTTP_POST, and if the param is a python list we need to break that
-            # out into multiple params with the same name.  Therefore, we convert
-            # the dict into a list of tuples.
-            tup_list = []    
-            for key in params:
-                if params[key] == None:
-                    params[key] = ''
-                    tup_list.append((key, params[key]))
-                elif type(params[key]) == list:
-                    for i in params[key]:
-                        tup_list.append((key, i))
-                else:
-                    tup_list.append((key, params[key]))
-                
-            payload = urlencode(tup_list)
-        
-            if method == 'GET':
-                url = "%s?%s" % (url, payload)
-                
+            payload = urlencode(params)
             response, content = self._make_request(url, method, payload,
                                                    headers=headers)
             response.unserialized_content = content
 
-        if self.serialize and self.serialization_handler:
-            response.unserialized_content = content
-            content = self.serialization_handler.load(content)
+        if self._meta.deserialize:
+            response.serialized_content = content
+            content = self._serialization.deserialize(content)
     
         response.method = method
         response.payload = payload
@@ -289,3 +258,23 @@ class RequestHandler(object):
                 )
 
         return (response, content)
+
+class TastyPieRequestHandler(RequestHandler):
+    def __init__(self, **kw):
+        super(TastyPieRequestHandler, self).__init__(**kw)
+        
+    def auth(self, user, api_key):
+        """
+        This implementation adds an Authorization header for user/api_key
+        per the `TastyPie Documentation <http://django-tastypie.readthedocs.org/en/latest/authentication_authorization.html>`_.
+                        
+        """
+        self.add_header('Authorization', 'ApiKey %s:%s' % (user, api_key))
+        
+    #def request(self, method, path, params={}, headers={}):
+    #    new_params = params.copy()
+    #    for key in params:
+    #        if type(params[key]) == dict:
+    #            new_params[key] = params[key]['resource_uri']
+    #    return super(TastyPieRequestHandler, self).request(method, path, new_params, headers)
+        

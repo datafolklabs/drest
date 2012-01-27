@@ -1,17 +1,16 @@
 
-from drest import interface, exc
+from drest import interface, exc, meta
 
 def validate(obj):
     """Validates a handler implementation against the ISerialize interface."""
     members = [
-        'setup',
-        'load',
-        'dump',
+        'serialize',
+        'deserialize',
         'get_headers',
         ]
     interface.validate(ISerialize, obj, members)
     
-class ISerialize(interface.Interface):
+class ISerialization(interface.Interface):
     """
     This class defines the Serialization Handler Interface.  Classes that 
     implement this handler must provide the methods and attributes defined 
@@ -25,26 +24,14 @@ class ISerialize(interface.Interface):
     Implementations do *not* subclass from interfaces.
             
     """
-    
-    def setup():
-        """
-        The setup function is called during connection initialization and
-        must 'setup' the handler object making it ready for the connection
-        or the application to make further calls to it.
-        
-        This function takes no arguments.
 
-        Returns: n/a
-        
-        """
-    
     def get_headers():
         """
         Return a dictionary of additional headers to include in requests.
         
         """
         
-    def load():
+    def deserialize():
         """
         Load a serialized string and return a dictionary of key/value pairs.
         
@@ -57,7 +44,7 @@ class ISerialize(interface.Interface):
         
         """
         
-    def dump():
+    def serialize():
         """
         Dump a dictionary of values from a serialized string.
         
@@ -70,13 +57,58 @@ class ISerialize(interface.Interface):
         
         """
         
-class JsonSerializationHandler(object):
-    def __init__(self):
-        pass
+class SerializationHandler(meta.MetaMixin):
+    """
+    Generic Serialization Handler.  Should be used to subclass from.
     
-    def setup(self):
+    Optional Arguments (Meta):
+    
+        backend 
+            The backend to use (i.e. json, yaml, etc)
+        
+        serialize
+            The function that serialized data on backend.
+            
+        deserialize
+            The function that deserializes data on backend.
+            
+    """
+    class Meta:
+        backend = None
+        serialize = 'dumps'
+        deserialize = 'loads'
+        
+    def __init__(self, **kw):
+        super(SerializationHandler, self).__init__(**kw)
+        
+    def get_headers(self):
+        return {}
+        
+    def deserialize(self, serialized_string):
+        try:
+            func = getattr(self._meta.backend, self._meta.deserialize)
+            return func(serialized_string.strip('\n'))
+        except ValueError, e:
+            return dict(error=e.args[0])
+    
+    def serialize(self, dict_obj):
+        try:
+            func = getattr(self._meta.backend, self._meta.serialize)
+            return func(dict_obj)
+        except ValueError, e:
+            return dict(error=e.args[0])
+
+class JsonSerializationHandler(SerializationHandler):
+    """
+    This handler implements the ISerialization interface using the standard 
+    json library.
+    
+    """
+    def __init__(self, **kw):
         import json
-        global json
+        
+        kw['backend'] = kw.get('backend', json)
+        super(JsonSerializationHandler, self).__init__(**kw)
         
     def get_headers(self):
         headers = {
@@ -84,28 +116,23 @@ class JsonSerializationHandler(object):
             }
         return headers
         
-    def load(self, serialized_string):
-        try:
-            return json.loads(serialized_string.strip('\n'))
-        except ValueError, e:
-            return dict(error=e.args[0])
+class YamlSerializationHandler(SerializationHandler):
+    """
+    This handler implements the ISerialization interface using the yaml 
+    library.
     
-    def dump(self, dict_obj):
-        try:
-            return json.dumps(dict_obj)
-        except ValueError, e:
-            return json.dumps(dict(error=e.args[0]))
-            
-class YamlSerializationHandler(object):
-    def __init__(self):
-        pass
+    """
     
-    def setup(self):
+    def __init__(self, **kw):
         import yaml
-        global yaml
         
-    def load(self, dict_obj):
-        return yaml.loads(dict_obj)
-    
-    def dump(self, dict_obj):
-        return yaml.dump(dict_obj)
+        kw['backend'] = kw.get('backend', yaml)
+        kw['backend'] = kw.get('serialize', 'dump')
+        super(YamlSerializationHandler, self).__init__(**kw)
+        
+    def get_headers(self):
+        headers = {
+            'Content-Type' : 'application/yaml',
+            }
+        return headers
+        

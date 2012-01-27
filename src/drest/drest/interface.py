@@ -8,7 +8,7 @@ class Interface(object):
         here.  Note that this is not an implementation and should never be
         used directly.
         """
-        raise exc.dRESTInterfaceError("Interfaces can not be used directly.")
+        raise exc.dRestInterfaceError("Interfaces can not be used directly.")
             
 class Attribute(object):
     def __init__(self, description):
@@ -49,5 +49,5 @@ def validate(interface, obj, members, **kw):
             invalid.append(member)
             
     if invalid:
-        raise exc.dRESTInterfaceError("Invalid or missing: %s in %s" % \
+        raise exc.dRestInterfaceError("Invalid or missing: %s in %s" % \
                                       (invalid, obj))

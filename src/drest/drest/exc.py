@@ -14,11 +14,13 @@ class dRestInterfaceError(dRestError):
 
 class dRestRequestError(dRestError):
     def __init__(self, msg, response, content):
-        self.msg = msg
+        super(dRestRequestError, self).__init__(msg)
         self.response = response
         self.content = content
-        super(dRestRequestError, self).__init__(msg)
         
-class dRestConnectionError(dRestError):
+class dRestResourceError(dRestError):
+    pass
+        
+class dRestAPIError(dRestError):
     pass
         

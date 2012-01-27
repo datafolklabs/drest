@@ -1,10 +1,9 @@
 
-from drest import interface, exc
+from drest import interface, exc, meta, request
 
 def resource_validator(klass, obj):
     """Validates a handler implementation against the IResource interface."""
     members = [
-        'setup',
         'get',
         'post',
         'put',
@@ -26,27 +25,6 @@ class IResource(interface.Interface):
     Implementations do *not* subclass from interfaces.
             
     """
-    
-    def setup():
-        """
-        The setup function is called during connection initialization and
-        must 'setup' the handler object making it ready for the connection
-        or the application to make further calls to it.
-        
-        Required Arguments:
-        
-            resource
-                The name of the resource.
-                
-            path
-                The path to the resource (after baseurl).
-                
-            request_handler
-                A request handler object.
-                
-        Returns: n/a
-        
-        """
     
     def get():
         """
@@ -114,20 +92,19 @@ class IResource(interface.Interface):
         
         """
         
-class RESTResourceHandler(object):
-    def __init__(self):
-        self.resource = None
-        self.path = None
-        self.request_handler = None
+class RESTResourceHandler(meta.MetaMixin):
+    class Meta:
+        baseurl = None
+        resource = None
+        path = None
+        request = request.RequestHandler
         
-    def setup(self, resource, path, request_handler):
-        self.resource = resource
-        self.path = path
-        self.request_handler = request_handler
+    def __init__(self, **kw):
+        super(RESTResourceHandler, self).__init__(**kw)
+        self._request = self._meta.request(baseurl=self._meta.baseurl)
         
     def request(self, method, path, params):
-        response, data = self.request_handler.request(method, path, params)
-        return response, data
+        return self._request.request(method, path, params)
         
     def filter(self, params):
         """
@@ -156,15 +133,15 @@ class RESTResourceHandler(object):
         """
 
         if resource_id:
-            path = '/%s/%s' % (self.path, resource_id)
+            path = '/%s/%s' % (self._meta.path, resource_id)
         else:
-            path = '/%s' % self.path
+            path = '/%s' % self._meta.path
             
         try:
             response, content = self.request('GET', path, 
                                              params=self.filter(params))
         except exc.dRestRequestError as e:
-            msg = "%s (resource: %s, id: %s)" % (e.msg, self.resource, 
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.resource, 
                                                  resource_id)
             raise exc.dRestRequestError(msg, e.response, e.content)
                                         
@@ -185,12 +162,12 @@ class RESTResourceHandler(object):
 
         """
         params = self.filter(params)
-        path = '/%s' % self.path
+        path = '/%s' % self._meta.path
         
         try:
             response, content = self.request('POST', path, self.filter(params))
         except exc.dRestRequestError as e:
-            msg = "%s (resource: %s)" % (e.msg, self.resource)
+            msg = "%s (resource: %s)" % (e.msg, self._meta.resource)
             raise exc.dRestRequestError(msg, e.response, e.content)
             
         return response, content
@@ -213,12 +190,12 @@ class RESTResourceHandler(object):
                 
         """            
         params = self.filter(params)
-        path = '/%s/%s' % (self.path, resource_id)
+        path = '/%s/%s' % (self._meta.path, resource_id)
         
         try:
             response, content = self.request('PUT', path, params)
         except exc.dRestRequestError as e:
-            msg = "%s (resource: %s, id: %s)" % (e.msg, self.resource, 
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.resource, 
                                                  resource_id)
             raise exc.dRestRequestError(msg, e.response, e.content)
             
@@ -242,12 +219,20 @@ class RESTResourceHandler(object):
                 (normally deletion only sets the status to 'Deleted').
             
         """
-        path = '/%s/%s' % (self.path, resource_id)
+        path = '/%s/%s' % (self._meta.path, resource_id)
         try:
             response, content = self.request('DELETE', path, params)
         except exc.dRestRequestError as e:
-            msg = "%s (resource: %s, id: %s)" % (e.msg, self.resource, 
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.resource, 
                                                  resource_id)
             raise exc.dRestRequestError(msg, e.response, e.content)
             
         return response, content
+
+class TastyPieResourceHandler(RESTResourceHandler):
+    def __init__(self, **kw):
+        super(TastyPieResourceHandler, self).__init__(**kw)
+        
+    def get_by_uri(self, resource_uri):
+        m = re.match('\/api\/v0/(.*)/(.*)/',resource_uri)
+        return self.get(m.group(2))
