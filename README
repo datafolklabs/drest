@@ -6,39 +6,56 @@ AUTHOR: BJ Dierkes <wdierkes@5dollarwhitebox.org>
 DESCRIPTION:
 
 dRest is a configurable HTTP/REST client library.  It's goal is to make 
-the creation of API clients easier and maximizing re-usable code.     
+the creation of API clients dead simple, without lacking features.
 
 USAGE:
 
     import drest
 
-    conn = drest.Connection('http://localhost:8000/api/v1/')
+    # Create a generic client api object
+    api = drest.API('http://localhost:8000/api/v1/')
     
-    # by default, auth() just appends its params to the URL so name the
+    # By default, auth() just appends its params to the URL so name the
     # parameters however you want them passed as.
-    conn.auth(api_user='john.doe', api_key='XXXXXXXXXXXX')
+    api.auth(api_user='john.doe', password='XXXXXXXXXXXX')
     
-    # make calls openly
-    response, data = conn.request('GET', '/user/2')
+    # Make calls openly
+    response, data = api.request('GET', '/users/2')
     
-    # or attach a resource
-    conn.add_resource('user')
+    # Or attach a resource
+    api.add_resource('users')
     
-    # get all resource objects
-    response, data = conn.user.get()
-
-    for user in data['objects']:
-        print user['username']
-
-    # get a single resource object
-    response, data = conn.user.get(2)
+    # Get available resources
+    api.resources
     
-    # update a resource
-    new_data = data.copy()
-    new_data['first_name'] = 'John'
-    new_data['last_name'] = 'Doe'
+    # Get all objects of a resource
+    response, objects = api.users.get()
     
-    response, data = conn.user.update(data['id'], new_data)
+    # Get a single resource
+    response, object = api.users.get(1)
+    
+    # Filter resources (per available TastyPie filtering options set)
+    response, objects = api.users.get(icontains='admin')
+    
+    # Update a resource
+    response, data = api.users.get(1)
+    updated_data = data.copy()
+    updated_data['first_name'] = 'John'
+    updated_data['last_name'] = 'Doe'
+    
+    response, object = api.users.update(1, updated_data)
+    
+    # Create a resource
+    user_data = dict(
+                    username='john.doe',
+                    password'oober-secure-password',
+                    first_name='John',
+                    last_name'Doe',
+                    )
+    response, data = api.users.create(1, user_data)
+    
+    # Delete a resource
+    response, data = api.users.delete(1)
     
     
 LICENSE:

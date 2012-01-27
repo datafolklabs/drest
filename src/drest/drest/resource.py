@@ -103,7 +103,7 @@ class RESTResourceHandler(meta.MetaMixin):
         super(RESTResourceHandler, self).__init__(**kw)
         self._request = self._meta.request(baseurl=self._meta.baseurl)
         
-    def request(self, method, path, params):
+    def request(self, method, path, params={}):
         return self._request.request(method, path, params)
         
     def filter(self, params):
@@ -128,7 +128,7 @@ class RESTResourceHandler(meta.MetaMixin):
                 The resource id (may also be a label in some environments).
         
             params
-                Additional GET parameters to pass along.
+                Additional request parameters to pass along.
                 
         """
 
@@ -230,9 +230,46 @@ class RESTResourceHandler(meta.MetaMixin):
         return response, content
 
 class TastyPieResourceHandler(RESTResourceHandler):
+    """
+    This class implements the IResource interface, specifically tailored for
+    interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest`_.
+    
+    """
+    class Meta:
+        schema = None
+        full_url = None
+        
     def __init__(self, **kw):
         super(TastyPieResourceHandler, self).__init__(**kw)
         
-    def get_by_uri(self, resource_uri):
+    def get_by_uri(self, resource_uri, params={}):
+        """
+        A wrapper around self.get() that accepts a TastyPie 'resource_uri' 
+        rather than a 'pk' (primary key).
+        
+        Required Arguments:
+        
+            resource_uri
+                The Resource URI to GET.
+            
+        Optional Arguments
+            
+            params
+                All additional keyword arguments are passed as extra request
+                parameters.
+                
+        """
         m = re.match('\/api\/v0/(.*)/(.*)/',resource_uri)
-        return self.get(m.group(2))
+        return self.get(m.group(2), params)
+
+    @property
+    def schema(self):
+        """
+        Returns the resources schema.
+        
+        """
+        if not self._meta.schema:
+            response, data = self.request('GET', '%s/schema' % self._meta.path)
+            self._meta.schema = data
+            
+        return self._meta.schema

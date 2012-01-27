@@ -153,16 +153,6 @@ class RequestHandler(meta.MetaMixin):
         
     def add_header(self, key, value):
         self.extra_headers[key] = value
-            
-    def auth(self, **kw):
-        """
-        In this implementation, we simply add any keywords passed to 
-        self.extra_url_params so that they are passed along with each request
-        in the url. For example, auth(user='john.doe', api_key='XXXXX').
-                
-        """
-        for key in kw:
-            self.add_url_param(key, kw[key])
        
     def _make_request(self, url, method, payload={}, headers={}): 
         try:
@@ -260,21 +250,11 @@ class RequestHandler(meta.MetaMixin):
         return (response, content)
 
 class TastyPieRequestHandler(RequestHandler):
+    """
+    This class implements the IRequest interface, specifically tailored for
+    interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest`_.
+    
+    """
     def __init__(self, **kw):
         super(TastyPieRequestHandler, self).__init__(**kw)
-        
-    def auth(self, user, api_key):
-        """
-        This implementation adds an Authorization header for user/api_key
-        per the `TastyPie Documentation <http://django-tastypie.readthedocs.org/en/latest/authentication_authorization.html>`_.
-                        
-        """
-        self.add_header('Authorization', 'ApiKey %s:%s' % (user, api_key))
-        
-    #def request(self, method, path, params={}, headers={}):
-    #    new_params = params.copy()
-    #    for key in params:
-    #        if type(params[key]) == dict:
-    #            new_params[key] = params[key]['resource_uri']
-    #    return super(TastyPieRequestHandler, self).request(method, path, new_params, headers)
-        
+                
