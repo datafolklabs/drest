@@ -1,7 +1,7 @@
 
 from drest import interface, exc, meta, request
 
-def resource_validator(klass, obj):
+def validate(klass, obj):
     """Validates a handler implementation against the IResource interface."""
     members = [
         'get',
@@ -101,6 +101,7 @@ class RESTResourceHandler(meta.MetaMixin):
         
     def __init__(self, **kw):
         super(RESTResourceHandler, self).__init__(**kw)
+        validate_resource(self)
         self._request = self._meta.request(baseurl=self._meta.baseurl)
         
     def request(self, method, path, params={}):
@@ -232,7 +233,7 @@ class RESTResourceHandler(meta.MetaMixin):
 class TastyPieResourceHandler(RESTResourceHandler):
     """
     This class implements the IResource interface, specifically tailored for
-    interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest`_.
+    interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
     
     """
     class Meta:

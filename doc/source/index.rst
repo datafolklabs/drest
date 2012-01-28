@@ -9,12 +9,20 @@ dRest Documentation
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    license
    changelog
+   
+.. toctree::
+   :maxdepth: 2
+
    api
-   dev/quickstart
+
+.. toctree::
+   :maxdepth: 2
+
+   dev
 
 
 Indices and tables

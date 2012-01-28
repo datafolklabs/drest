@@ -8,13 +8,12 @@ from urllib2 import urlopen
 
 from drest import exc, interface, meta, serialization
 
-def validate(obj):
-    """Validates a handler implementation against the ISerialize interface."""
+def validate(klass, obj):
+    """Validates a handler implementation against the IRequest interface."""
     members = [
         'add_param',
         'add_url_param',
         'add_header',
-        'auth',
         'request',
         'extra_params',
         'extra_url_params',
@@ -140,6 +139,7 @@ class RequestHandler(meta.MetaMixin):
             self._meta.deserialize = False
             
         else:
+            serialization.validate(self._meta.serialization)
             self._serialization = self._meta.serialization()
             headers = self._serialization.get_headers()
             for key in headers:
@@ -228,7 +228,7 @@ class RequestHandler(meta.MetaMixin):
     
     def handle_response(self, response, content):
         """
-        A simple wrapper to handle the response.  Be default raises 
+        A simple wrapper to handle the response.  By default raises 
         exc.dRestRequestError if the response code is within 400-499, or 500.
         
         Required Arguments:
@@ -252,7 +252,7 @@ class RequestHandler(meta.MetaMixin):
 class TastyPieRequestHandler(RequestHandler):
     """
     This class implements the IRequest interface, specifically tailored for
-    interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest`_.
+    interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
     
     """
     def __init__(self, **kw):

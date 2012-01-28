@@ -2,6 +2,11 @@
 from drest import exc
 
 class Interface(object):
+    """
+    This is an abstract base class that all interface classes should 
+    subclass from.
+    
+    """
     def __init__(self):
         """
         An interface definition class.  All Interfaces should subclass from
@@ -11,6 +16,19 @@ class Interface(object):
         raise exc.dRestInterfaceError("Interfaces can not be used directly.")
             
 class Attribute(object):
+    """
+    Defines an Interface attribute.
+    
+    Usage:
+    
+    .. code-block:: python
+    
+        from drest import interface
+        
+        class MyInterface(interface.Interface):
+            my_attribute = interface.Attribute("A description of my_attribute.")
+            
+    """
     def __init__(self, description):
         """
         An interface attribute definition.

@@ -1,14 +1,14 @@
 
 from drest import interface, exc, meta
 
-def validate(obj):
+def validate(klass, obj):
     """Validates a handler implementation against the ISerialize interface."""
     members = [
         'serialize',
         'deserialize',
         'get_headers',
         ]
-    interface.validate(ISerialize, obj, members)
+    interface.validate(ISerialization, obj, members)
     
 class ISerialization(interface.Interface):
     """

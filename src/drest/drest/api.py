@@ -76,8 +76,10 @@ class API(meta.MetaMixin):
     def __init__(self, baseurl, **kw):
         kw['baseurl'] = kw.get('baseurl', baseurl)
         super(API, self).__init__(**kw)        
+        
+        request.validate(self._meta.request)
         self._request = self._meta.request(baseurl=self._meta.baseurl)
-
+        
     def auth(self, **kw):
         """
         In this implementation, we simply add any keywords passed to 
@@ -102,6 +104,7 @@ class API(meta.MetaMixin):
         else:
             handler = resource_handler
         
+        resource.validate(handler)
         handler = handler(baseurl=self._meta.baseurl, path=path, resource=name)
         
         resource.resource_validator(resource.IResource, handler)
