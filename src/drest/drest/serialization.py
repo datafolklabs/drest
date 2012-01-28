@@ -1,7 +1,7 @@
 
 from drest import interface, exc, meta
 
-def validate(klass, obj):
+def validate(obj):
     """Validates a handler implementation against the ISerialize interface."""
     members = [
         'serialize',
@@ -73,11 +73,6 @@ class SerializationHandler(meta.MetaMixin):
             The function that deserializes data on backend.
             
     """
-    class Meta:
-        backend = None
-        serialize = 'dumps'
-        deserialize = 'loads'
-        
     def __init__(self, **kw):
         super(SerializationHandler, self).__init__(**kw)
         
@@ -85,18 +80,11 @@ class SerializationHandler(meta.MetaMixin):
         return {}
         
     def deserialize(self, serialized_string):
-        try:
-            func = getattr(self._meta.backend, self._meta.deserialize)
-            return func(serialized_string.strip('\n'))
-        except ValueError, e:
-            return dict(error=e.args[0])
+        raise NotImplementedError
     
     def serialize(self, dict_obj):
-        try:
-            func = getattr(self._meta.backend, self._meta.serialize)
-            return func(dict_obj)
-        except ValueError, e:
-            return dict(error=e.args[0])
+        raise NotImplementedError
+        
 
 class JsonSerializationHandler(SerializationHandler):
     """
@@ -106,33 +94,27 @@ class JsonSerializationHandler(SerializationHandler):
     """
     def __init__(self, **kw):
         import json
-        
-        kw['backend'] = kw.get('backend', json)
+        self.backend = json
         super(JsonSerializationHandler, self).__init__(**kw)
         
+    def deserialize(self, serialized_string):
+        try:
+            # Fix for Python3
+            if type(serialized_string) == bytes:
+                serialized_string = serialized_string.decode('utf-8')
+            
+            return self.backend.loads(serialized_string)
+        except ValueError as e:
+            return dict(error=e.args[0])
+
+    def serialize(self, dict_obj):
+        try:
+            return self.backend.dumps(dict_obj)
+        except ValueError as e:
+            return dict(error=e.args[0])
+                
     def get_headers(self):
         headers = {
             'Content-Type' : 'application/json',
             }
         return headers
-        
-class YamlSerializationHandler(SerializationHandler):
-    """
-    This handler implements the ISerialization interface using the yaml 
-    library.
-    
-    """
-    
-    def __init__(self, **kw):
-        import yaml
-        
-        kw['backend'] = kw.get('backend', yaml)
-        kw['backend'] = kw.get('serialize', 'dump')
-        super(YamlSerializationHandler, self).__init__(**kw)
-        
-    def get_headers(self):
-        headers = {
-            'Content-Type' : 'application/yaml',
-            }
-        return headers
-        

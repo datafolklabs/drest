@@ -1,14 +1,23 @@
 
 import os
-import httplib
+import sys
+
+if sys.version_info[0] < 3:
+    import httplib # pragma: no cover
+    from urllib import urlencode
+    from urllib2 import urlopen
+
+else:
+    import http.client # pragma: no cover
+    from urllib.parse import urlencode
+    from urllib.request import urlopen
+    
 import socket
 from httplib2 import Http
-from urllib import urlencode
-from urllib2 import urlopen
 
 from drest import exc, interface, meta, serialization
 
-def validate(klass, obj):
+def validate(obj):
     """Validates a handler implementation against the IRequest interface."""
     members = [
         'add_param',
@@ -130,7 +139,7 @@ class RequestHandler(meta.MetaMixin):
         
         self._meta.baseurl = self._meta.baseurl.rstrip('/')
         
-        if os.environ.has_key('DREST_DEBUG') and \
+        if 'DREST_DEBUG' in os.environ and \
            os.environ['DREST_DEBUG'] in [1, '1']:
             self._meta.debug = True
         
@@ -139,8 +148,9 @@ class RequestHandler(meta.MetaMixin):
             self._meta.deserialize = False
             
         else:
-            serialization.validate(self._meta.serialization)
             self._serialization = self._meta.serialization()
+            serialization.validate(self._serialization)
+            
             headers = self._serialization.get_headers()
             for key in headers:
                 self.extra_headers[key] = headers[key]
@@ -200,10 +210,10 @@ class RequestHandler(meta.MetaMixin):
             url = "%s?%s" % (url, urlencode(self.extra_url_params))
             
         if self._meta.debug:
-            print '---'
-            print 'DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
-                   (method, url, params, headers)
-            print '---'
+            print('---')
+            print('DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
+                   (method, url, params, headers))
+            print('---')
             
         if self._meta.serialize: 
             payload = self._serialization.serialize(params)
@@ -242,7 +252,7 @@ class RequestHandler(meta.MetaMixin):
         if (400 <= response.status <=499) or (response.status == 500):
             msg = "Received HTTP Code %s - %s" % (
                    response.status, 
-                   httplib.responses[int(response.status)])
+                   http.client.responses[int(response.status)])
             raise exc.dRestRequestError(
                 msg, response=response, content=content
                 )

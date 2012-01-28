@@ -11,7 +11,7 @@ class Meta(object):
         self._merge(kwargs)
 
     def _merge(self, dict_obj):
-        for key, value in dict_obj.iteritems():
+        for key, value in dict_obj.items():
             setattr(self, key, value)
             
 class MetaMixin(object):
@@ -30,11 +30,11 @@ class MetaMixin(object):
 
         # Merge the Meta classes into one dict
         for meta in metas:
-            final_meta.update(dict([x for x in meta.__dict__.items() \
+            final_meta.update(dict([x for x in list(meta.__dict__.items()) \
                                        if not x[0].startswith("_")]))
 
         # Update the final Meta with any kwargs passed in
-        for key in final_meta.keys():
+        for key in list(final_meta.keys()):
             if key in kwargs:
                 final_meta[key] = kwargs.pop(key)
 

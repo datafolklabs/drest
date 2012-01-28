@@ -1,7 +1,7 @@
 
 from drest import interface, exc, meta, request
 
-def validate(klass, obj):
+def validate(obj):
     """Validates a handler implementation against the IResource interface."""
     members = [
         'get',
@@ -101,8 +101,8 @@ class RESTResourceHandler(meta.MetaMixin):
         
     def __init__(self, **kw):
         super(RESTResourceHandler, self).__init__(**kw)
-        validate_resource(self)
         self._request = self._meta.request(baseurl=self._meta.baseurl)
+        request.validate(self._request)
         
     def request(self, method, path, params={}):
         return self._request.request(method, path, params)

@@ -77,8 +77,8 @@ class API(meta.MetaMixin):
         kw['baseurl'] = kw.get('baseurl', baseurl)
         super(API, self).__init__(**kw)        
         
-        request.validate(self._meta.request)
         self._request = self._meta.request(baseurl=self._meta.baseurl)
+        request.validate(self._request)
         
     def auth(self, **kw):
         """
@@ -104,10 +104,9 @@ class API(meta.MetaMixin):
         else:
             handler = resource_handler
         
-        resource.validate(handler)
-        handler = handler(baseurl=self._meta.baseurl, path=path, resource=name)
         
-        resource.resource_validator(resource.IResource, handler)
+        handler = handler(baseurl=self._meta.baseurl, path=path, resource=name)
+        resource.validate(handler)
         if hasattr(self, name):
             raise exc.dRestResourceError(
                 "The object '%s' already exist on '%s'" % (name, self))
@@ -186,7 +185,7 @@ class TastyPieAPI(API):
         
         """
         response, data = self.request('GET', '/')
-        for resource in data.keys():
+        for resource in list(data.keys()):
             if resource not in self.resources:
                 self.add_resource(resource)
     
