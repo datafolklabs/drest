@@ -16,7 +16,6 @@ import sys, os
 VERSION = '0.1'
 RELEASE = '0.1.1'
 
-sys.path.insert(0, os.path.abspath('src/drest/'))
 sys.path.insert(0, os.path.abspath('../../src/drest/'))
 
 # If extensions (or modules to document with autodoc) are in another directory,

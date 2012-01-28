@@ -6,6 +6,11 @@
 dRest Documentation
 ===================
 
+dRest is a configurable HTTP/REST client library.  It's goal is to make 
+the creation of API clients dead simple, without lacking features.  Support 
+for Python 2.6+ and Python 3+.
+
+
 Contents:
 
 .. toctree::
