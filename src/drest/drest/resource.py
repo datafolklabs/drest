@@ -1,4 +1,5 @@
 
+import re
 from drest import interface, exc, meta, request
 
 def validate(obj):

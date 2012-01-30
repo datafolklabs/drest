@@ -8,7 +8,7 @@ if sys.version_info[0] < 3:
     from urllib2 import urlopen
 
 else:
-    import http.client # pragma: no cover
+    from http import client as httplib # pragma: no cover
     from urllib.parse import urlencode
     from urllib.request import urlopen
     
@@ -252,7 +252,7 @@ class RequestHandler(meta.MetaMixin):
         if (400 <= response.status <=499) or (response.status == 500):
             msg = "Received HTTP Code %s - %s" % (
                    response.status, 
-                   http.client.responses[int(response.status)])
+                   httplib.responses[int(response.status)])
             raise exc.dRestRequestError(
                 msg, response=response, content=content
                 )
