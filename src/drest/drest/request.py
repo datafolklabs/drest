@@ -154,7 +154,7 @@ class RequestHandler(meta.MetaMixin):
             headers = self._serialization.get_headers()
             for key in headers:
                 self.extra_headers[key] = headers[key]
-                   
+        
     def add_param(self, key, value):
         self.extra_params[key] = value
     
@@ -189,7 +189,7 @@ class RequestHandler(meta.MetaMixin):
             params
                 Dictionary of keyword arguments.
             
-        """        
+        """   
         path = path.lstrip('/').rstrip('/')
         for key in self.extra_params:
             params[key] = self.extra_params[key]
@@ -205,7 +205,7 @@ class RequestHandler(meta.MetaMixin):
         if method == 'GET':
             for key in params:
                 self.add_url_param(key, params[key])
-                
+        
         if self.extra_url_params:
             url = "%s?%s" % (url, urlencode(self.extra_url_params))
             
@@ -214,7 +214,7 @@ class RequestHandler(meta.MetaMixin):
             print('DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
                    (method, url, params, headers))
             print('---')
-            
+
         if self._meta.serialize: 
             payload = self._serialization.serialize(params)
             response, content = self._make_request(url, method, payload,
@@ -265,6 +265,10 @@ class TastyPieRequestHandler(RequestHandler):
     interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
     
     """
+    class Meta:
+        serialize = True
+        deserialize = True
+        serialization = serialization.JsonSerializationHandler
+        
     def __init__(self, **kw):
         super(TastyPieRequestHandler, self).__init__(**kw)
-                

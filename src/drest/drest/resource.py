@@ -190,7 +190,8 @@ class RESTResourceHandler(meta.MetaMixin):
             params
                 A dictionary of parameters (different for every resource).
                 
-        """            
+        """
+                    
         params = self.filter(params)
         path = '/%s/%s' % (self._meta.path, resource_id)
         
@@ -236,8 +237,9 @@ class TastyPieResourceHandler(RESTResourceHandler):
     This class implements the IResource interface, specifically tailored for
     interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
     
-    """
+    """ 
     class Meta:
+        request = request.TastyPieRequestHandler
         schema = None
         full_url = None
         
