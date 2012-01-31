@@ -120,7 +120,7 @@ class TastyPieAPI(API):
     
     Authentication Mechanisms
     
-    Currently the only supported authentication mechanizm is ApiKey.
+    Currently the only supported authentication mechanism is ApiKey.
     
     
     Usage
@@ -130,14 +130,45 @@ class TastyPieAPI(API):
     do not copy and paste any of the following directly without modifying the
     request parameters per your use case.
     
+    Create the client object, and authenticate with a user/api_key pair:
+    
     .. code-block:: python
     
         import drest
         api = drest.api.TastyPieAPI('http://localhost:8000/api/v0/')
         api.auth(user='john.doe', api_key='34547a497326dde80bcaf8bcee43e3d1b5f24cc9')
+    
+    As drest auto-detects TastyPie resources, you can view those at:
+    
+    .. code-block:: python    
+    
+        api.resources
         
+    And access their schema:
+    
+    .. code-block:: python  
+    
+        api.users.schema
         
-    See drest.api.API for more usage examples.
+    As well as make the usual calls such as:
+    
+    .. code-block:: python  
+    
+        api.users.get()
+        api.users.get(<pk>)
+        api.users.put(<pk>, data_dict)
+        api.users.post(data_dict)
+        api.users.delete(<pk>)
+        
+    What about filtering? (these depend on how the `API is configured <http://django-tastypie.readthedocs.org/en/latest/resources.html#basic-filtering>`_):
+    
+    .. code-block:: python
+    
+        api.users.get(params=dict(username='admin'))
+        api.users.get(params=dict(username__icontains='admin'))
+        ...
+        
+    See :mod:`drest.api.API` for more standard usage examples.
         
     """
     class Meta:
