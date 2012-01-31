@@ -31,11 +31,7 @@ Installing Development Version From Git
 
 .. code-block:: text
 
-    $ git clone git://github.com/derks/drest.git
-    
-    $ cd drest
-    
-    
+    (drest) $ git clone git://github.com/derks/drest.git
     
     (drest) $ cd src/drest/
     

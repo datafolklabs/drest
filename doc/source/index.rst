@@ -22,6 +22,10 @@ Contents:
    :maxdepth: 1
    
    license
+   
+.. toctree::
+   :maxdepth: 1
+   
    changelog
 
 .. toctree::
