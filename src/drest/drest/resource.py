@@ -94,6 +94,38 @@ class IResource(interface.Interface):
         """
         
 class RESTResourceHandler(meta.MetaMixin):
+    """
+    This class implements the IResource interface, specifically for 
+    interacting with REST-like resources.  It provides convenient functions
+    that wrap around the typical GET, PUT, POST, DELETE actions.
+    
+    Optional Arguments / Meta:
+    
+        baseurl
+            The base url to the API endpoint (generally passed in from the
+            API class).
+        
+        resource
+            The name of the resource on the API.
+            
+        path
+            The path to the resource (after baseurl).
+        
+        request
+            The request handler to use (default: :mod:`drest.request.RequestHandler`).
+            
+    Usage:
+    
+    .. code-block:: python
+    
+        import drest
+        
+        class MyAPI(drest.api.API):
+            class Meta:
+                resource = drest.resource.RESTResourceHandler
+        ...
+        
+    """
     class Meta:
         baseurl = None
         resource = None
@@ -106,6 +138,21 @@ class RESTResourceHandler(meta.MetaMixin):
         request.validate(self._request)
         
     def request(self, method, path, params={}):
+        """
+        A wrapper around self._request.request().
+        
+        Required Arguments:
+        
+            method
+                The request method (i.e. GET, PUT, POST, DELETE)
+            
+            path
+                The path to request.
+            
+            params
+                Additional params to pass to the request.
+            
+        """
         return self._request.request(method, path, params)
         
     def filter(self, params):

@@ -8,3 +8,4 @@ Contents:
    
    dev/quickstart
    dev/tastypie
+   dev/customization
