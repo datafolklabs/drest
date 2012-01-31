@@ -5,6 +5,7 @@ Every piece of dRest is completely customizable by way of 'handlers'.
 
 API Reference:
 
+    * :mod:`drest.api`
     * :mod:`drest.resource`
     * :mod:`drest.request`
     * :mod:`drest.serialization`
