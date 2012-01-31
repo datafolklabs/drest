@@ -60,17 +60,6 @@ class ISerialization(interface.Interface):
 class SerializationHandler(meta.MetaMixin):
     """
     Generic Serialization Handler.  Should be used to subclass from.
-    
-    Optional Arguments (Meta):
-    
-        backend 
-            The backend to use (i.e. json, yaml, etc)
-        
-        serialize
-            The function that serialized data on backend.
-            
-        deserialize
-            The function that deserializes data on backend.
             
     """
     def __init__(self, **kw):
