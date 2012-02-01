@@ -105,10 +105,10 @@ native and programatic.
     api.resources
     
     # GET http://localhost:8000/api/v1/users/
-    response, objects = api.users.get()
+    response, data = api.users.get()
     
     # GET http://localhost:8000/api/v1/users/1/
-    response, object = api.users.get(1)
+    response, data = api.users.get(1)
 
 
 Creating a resource only requires a dictionary of 'parameters' passed to the
@@ -160,8 +160,9 @@ Every call to an API returns a tuple in the form of:
 The Response Object
 ^^^^^^^^^^^^^^^^^^^
 
-The first item returned from a request is an httplib2.Response object that 
-contains response data. It can can also be accessed as a dictionary:
+The first item returned from a request is an `httplib2.Response <http://bitworking.org/projects/httplib2/doc/html/libhttplib2.html#httplib2.Response>`_ 
+object that contains response data. It can can also be accessed as a 
+dictionary:
 
 .. code-block:: python
 
@@ -170,7 +171,7 @@ contains response data. It can can also be accessed as a dictionary:
     # The contents of the response object:
     {
         'status': '200', 
-        'content-location': u'http://localhost:8000/api/v0/users/', 
+        'content-location': u'http://localhost:8000/api/v1/users/', 
         'vary': 'Cookie', 
         'server': 'WSGIServer/0.1 Python/2.7.2', 
         'date': 'Tue, 31 Jan 2012 20:41:47 GMT', 
@@ -215,7 +216,7 @@ See :mod:`drest.serialization`.
                     u'last_name': u'Doe', 
                     u'resource_pk': 2, 
                     u'last_login': u'2012-01-26T01:21:20', 
-                    u'resource_uri': u'/api/v0/users/2/', 
+                    u'resource_uri': u'/api/v1/users/2/', 
                     u'id': u'2', 
                     u'date_joined': u'2008-09-04T14:25:29'
                 }

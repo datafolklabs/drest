@@ -7,13 +7,22 @@ dRest Documentation
 ===================
 
 dRest is a configurable HTTP/REST client library.  It's goal is to make 
-the creation of API clients dead simple, without lacking features.  Support 
-for Python 2.6+ and Python 3+.
+the creation of API clients dead simple, without lacking features.
 
+Key Features:
+
+    * Light-weight API Client Library, implementing REST by default
+    * Native support for the Django TastyPie API Framework
+    * Only one external dependency on httplib2
+    * Key pieces of the library are customizable by defined handlers
+    * Interface definitions ensure handlers are properly implemented
+    * Support for Python 2.6+ and Python 3+
+    * 100% test coverage
+    
 Additional Links:
 
- * `Source Code <http://github.com/derks/drest/>`_
- * `Issue Tracking and Feature Requests <http://github.com/derks/drest/issues/>`_
+    * `Source Code <http://github.com/derks/drest/>`_
+    * `Issue Tracking and Feature Requests <http://github.com/derks/drest/issues/>`_
  
 
 Contents:

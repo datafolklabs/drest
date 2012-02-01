@@ -6,9 +6,18 @@ AUTHOR: BJ Dierkes <wdierkes@5dollarwhitebox.org>
 DESCRIPTION:
 
 dRest is a configurable HTTP/REST client library.  It's goal is to make 
-the creation of API clients dead simple, without lacking features.  Support 
-for Python 2.6+ and Python 3+.
+the creation of API clients dead simple, without lacking features.  
 
+FEATURES:
+
+    * Light-weight API Client Library, implementing REST by default
+    * Native support for the Django TastyPie API Framework
+    * Only one external dependency on httplib2
+    * Key pieces of the library are customizable by defined handlers
+    * Interface definitions ensure handlers are properly implemented
+    * Support for Python 2.6+ and Python 3+
+    * 100% test coverage
+    
 USAGE:
 
     import drest
@@ -16,11 +25,12 @@ USAGE:
     # Create a generic client api object
     api = drest.API('http://localhost:8000/api/v1/')
     
-    # By default, auth() just appends its params to the URL so name the
-    # parameters however you want them passed as.
+    # By default, auth() appends its params to the URL so name the parameters 
+    # however you want them passed as.
     api.auth(api_user='john.doe', password='XXXXXXXXXXXX')
     
-    # Make calls openly
+    # Make calls openly via any HTTP Method, and any path
+    # GET http://localhost:8000/api/v1/users/1/
     response, data = api.request('GET', '/users/1/')
     
     # Or attach a resource
@@ -28,12 +38,26 @@ USAGE:
     
     # Get available resources
     api.resources
+    >>> ['users', 'projects', 'etc']
     
     # Get all objects of a resource
+    # GET http://localhost:8000/api/v1/users/
     response, objects = api.users.get()
     
     # Get a single resource with primary key '1'
+    # GET http://localhost:8000/api/v1/users/1/
     response, object = api.users.get(1)
+
+    # Create a resource data dictionary
+    user_data = dict(
+                    username='john.doe',
+                    password'oober-secure-password',
+                    first_name='John',
+                    last_name'Doe',
+                    )
+    
+    # POST http://localhost:8000/api/v1/users/
+    response, data = api.users.create(user_data)
     
     # Update a resource with primary key '1'
     response, data = api.users.get(1)
@@ -41,18 +65,11 @@ USAGE:
     updated_data['first_name'] = 'John'
     updated_data['last_name'] = 'Doe'
     
-    response, object = api.users.update(data['id'], updated_data)
-    
-    # Create a resource
-    user_data = dict(
-                    username='john.doe',
-                    password'oober-secure-password',
-                    first_name='John',
-                    last_name'Doe',
-                    )
-    response, data = api.users.create(user_data)
+    # PUT http://localhost:8000/api/v1/users/1/
+    response, object = api.users.update(1, updated_data)
     
     # Delete a resource with primary key '1'
+    # DELETE http://localhost:8000/api/v1/users/1/
     response, data = api.users.delete(1)
     
     

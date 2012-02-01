@@ -262,7 +262,7 @@ class TastyPieResourceHandler(RESTResourceHandler):
             import drest
             api = drest.api.TastyPieAPI('http://localhost:8000/api/v0/')
             api.auth(user='john.doe', api_key='34547a497326dde80bcaf8bcee43e3d1b5f24cc9')
-            response, data = api.users.get('/api/v1/users/234/')
+            response, data = api.users.get_by_uri('/api/v1/users/234/')
             
         """
         pk = resource_uri.split('/')[-1:]
