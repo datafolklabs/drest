@@ -2,17 +2,17 @@
 from setuptools import setup, find_packages
 import sys, os
 
-VERSION = '0.1.1'
+VERSION = '0.9.2'
 
 setup(name='drest',
     version=VERSION,
-    description="dREST API Client Framework",
-    long_description="dREST API Client Framework",
+    description="dREST API Client Library",
+    long_description="dREST API Client Library",
     classifiers=[], 
-    keywords='rest api framework',
+    keywords='rest api',
     author='BJ Dierkes',
     author_email='wdierkes@5dollarwhitebox.org',
-    url='http://github.com/derks/drest',
+    url='http://github.com/derks/drest/',
     license='BSD',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     include_package_data=True,

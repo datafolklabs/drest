@@ -42,11 +42,11 @@ USAGE:
     
     # Get all objects of a resource
     # GET http://localhost:8000/api/v1/users/
-    response, objects = api.users.get()
+    response, data = api.users.get()
     
     # Get a single resource with primary key '1'
     # GET http://localhost:8000/api/v1/users/1/
-    response, object = api.users.get(1)
+    response, data = api.users.get(1)
 
     # Create a resource data dictionary
     user_data = dict(
@@ -66,7 +66,7 @@ USAGE:
     updated_data['last_name'] = 'Doe'
     
     # PUT http://localhost:8000/api/v1/users/1/
-    response, object = api.users.update(1, updated_data)
+    response, data = api.users.update(1, updated_data)
     
     # Delete a resource with primary key '1'
     # DELETE http://localhost:8000/api/v1/users/1/
