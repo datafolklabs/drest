@@ -1,0 +1,64 @@
+"""Tests for drest.exc."""
+
+import os
+from nose.tools import with_setup, ok_, eq_, raises
+import drest
+
+API_URL = os.environ.get('DREST_TEST_API', 'http://localhost:5000/')
+
+@raises(drest.exc.dRestError)
+def test_error():
+    try:
+        raise drest.exc.dRestError('Error Msg')
+    except drest.exc.dRestError as e:
+        e.__repr__()
+        eq_(e.msg, 'Error Msg')
+        eq_(e.__unicode__(), unicode(e.msg))
+        eq_(e.__str__(), str(e.msg))
+        raise
+
+@raises(drest.exc.dRestInterfaceError)
+def test_interface_error():
+    try:
+        raise drest.exc.dRestInterfaceError('Error Msg')
+    except drest.exc.dRestInterfaceError as e:
+        e.__repr__()
+        eq_(e.msg, 'Error Msg')
+        eq_(e.__unicode__(), unicode(e.msg))
+        eq_(e.__str__(), str(e.msg))
+        raise
+
+@raises(drest.exc.dRestRequestError)
+def test_request_error():
+    try:
+        api = drest.api.API(API_URL)
+        response, data = api.request('GET', '/')
+        raise drest.exc.dRestRequestError('Error Msg', response, data)
+    except drest.exc.dRestRequestError as e:
+        e.__repr__()
+        eq_(e.msg, 'Error Msg')
+        eq_(e.__unicode__(), unicode(e.msg))
+        eq_(e.__str__(), str(e.msg))
+        raise
+        
+@raises(drest.exc.dRestResourceError)
+def test_resource_error():
+    try:
+        raise drest.exc.dRestResourceError('Error Msg')
+    except drest.exc.dRestResourceError as e:
+        e.__repr__()
+        eq_(e.msg, 'Error Msg')
+        eq_(e.__unicode__(), unicode(e.msg))
+        eq_(e.__str__(), str(e.msg))
+        raise
+        
+@raises(drest.exc.dRestAPIError)
+def test_api_error():
+    try:
+        raise drest.exc.dRestAPIError('Error Msg')
+    except drest.exc.dRestAPIError as e:
+        e.__repr__()
+        eq_(e.msg, 'Error Msg')
+        eq_(e.__unicode__(), unicode(e.msg))
+        eq_(e.__str__(), str(e.msg))
+        raise

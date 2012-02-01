@@ -42,7 +42,13 @@ class Attribute(object):
         self.description = description
     
     def __repr__(self):
-        return "<interface.Attribute - '%s'>" % self.description
+        return "Attribute: %s" % self.description
+    
+    def __str__(self):
+        return str(self.__repr__())    
+    
+    def __unicode__(self):
+        return unicode(self.__repr__())
         
 def validate(interface, obj, members, **kw):
     """

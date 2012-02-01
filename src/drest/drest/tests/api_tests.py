@@ -9,15 +9,15 @@ import drest
 API_URL = os.environ.get('DREST_TEST_API', 'http://localhost:5000/')
 api = drest.api.API(API_URL)
 
-def test_api_auth():
+def test_auth():
     api.auth(user='john.doe', password='oober-secure-password')
 
-def test_api_request():
+def test_request():
     response, data = api.request('GET', '/')
     res = 'users' in data
     ok_(res)
 
-def test_api_add_resource():
+def test_add_resource():
     api.add_resource('users')
     response, data = api.users.get()
     eq_(data['method'], 'GET')

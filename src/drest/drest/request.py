@@ -4,13 +4,13 @@ import sys
 
 if sys.version_info[0] < 3:
     import httplib # pragma: no cover
-    from urllib import urlencode
-    from urllib2 import urlopen
+    from urllib import urlencode # pragma: no cover
+    from urllib2 import urlopen # pragma: no cover
 
 else:
     from http import client as httplib # pragma: no cover
-    from urllib.parse import urlencode
-    from urllib.request import urlopen
+    from urllib.parse import urlencode # pragma: no cover
+    from urllib.request import urlopen # pragma: no cover
     
 import socket
 from httplib2 import Http
