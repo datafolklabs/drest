@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SOURCES="src/drest"
+SOURCES="src/drest/"
 
 pip install nose coverage
 

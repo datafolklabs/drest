@@ -50,7 +50,7 @@ class Attribute(object):
     def __unicode__(self):
         return unicode(self.__repr__())
         
-def validate(interface, obj, members, **kw):
+def validate(interface, obj, members, metas=[]):
     """
     A wrapper to validate interfaces.
     
@@ -63,14 +63,24 @@ def validate(interface, obj, members, **kw):
             The object to validate.
             
         members
-            The object members that must exist.
+            A list of object members that must exist.
             
+    Optional Arguments:
+        
+        metas
+            A list of meta parameters that must exist.
+             
     """
     invalid = []
 
     for member in members:
         if not hasattr(obj, member):
             invalid.append(member)
+            
+    if hasattr(obj, '_meta'):
+        for meta in metas:
+            if not hasattr(obj._meta, meta):
+                invalid.append('_meta.%s' % meta)
             
     if invalid:
         raise exc.dRestInterfaceError("Invalid or missing: %s in %s" % \

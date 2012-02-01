@@ -29,7 +29,7 @@ def test_add_resource():
     eq_(data['action'], 'get_all')
     
     api.add_resource('users3', path='/users/', 
-                     resource_handler=drest.resource.ResourceHandler)
+                     resource_handler=drest.resource.RESTResourceHandler)
     response, data = api.users3.get()
     eq_(data['method'], 'GET')
     eq_(data['action'], 'get_all')

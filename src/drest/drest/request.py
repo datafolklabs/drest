@@ -26,7 +26,14 @@ def validate(obj):
         'request',
         'handle_response',
         ]
-    interface.validate(IRequest, obj, members)
+    metas = [
+        'baseurl',
+        'debug',
+        'serialization',
+        'serialize',
+        'deserialize',
+        ]
+    interface.validate(IRequest, obj, members, metas)
     
 class IRequest(interface.Interface):
     """

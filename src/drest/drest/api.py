@@ -69,7 +69,7 @@ class API(meta.MetaMixin):
     class Meta:
         baseurl = None
         request = request.RequestHandler
-        resource = resource.ResourceHandler
+        resource = resource.RESTResourceHandler
 
     def __init__(self, baseurl, **kw):
         kw['baseurl'] = kw.get('baseurl', baseurl)

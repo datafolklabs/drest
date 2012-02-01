@@ -4,11 +4,12 @@ from drest import interface, exc, meta, request
 
 def validate(obj):
     """Validates a handler implementation against the IResource interface."""
-    members = [
-        'get',
-        'post',
-        'put',
-        'delete', 
+    members = []
+    metas = [
+        'baseurl',
+        'resource',
+        'path',
+        'request',
         ]
     interface.validate(IResource, obj, members)
     
@@ -95,6 +96,21 @@ class IResource(interface.Interface):
         
 class ResourceHandler(meta.MetaMixin):
     """
+    This class acts as a base class that other resource handler should
+    subclass from.
+    
+    """
+    class Meta:
+        baseurl = None
+        resource = None
+        path = None
+        request = request.RequestHandler
+        
+    def __init__(self, **kw):
+        super(ResourceHandler, self).__init__(**kw)
+        
+class RESTResourceHandler(ResourceHandler):
+    """
     This class implements the IResource interface, specifically for 
     interacting with REST-like resources.  It provides convenient functions
     that wrap around the typical GET, PUT, POST, DELETE actions.
@@ -122,18 +138,12 @@ class ResourceHandler(meta.MetaMixin):
         
         class MyAPI(drest.api.API):
             class Meta:
-                resource = drest.resource.ResourceHandler
+                resource = drest.resource.RESTResourceHandler
         ...
         
     """
-    class Meta:
-        baseurl = None
-        resource = None
-        path = None
-        request = request.RequestHandler
-        
     def __init__(self, **kw):
-        super(ResourceHandler, self).__init__(**kw)
+        super(RESTResourceHandler, self).__init__(**kw)
         self._request = self._meta.request(baseurl=self._meta.baseurl)
         request.validate(self._request)
         
@@ -279,7 +289,7 @@ class ResourceHandler(meta.MetaMixin):
             
         return response, content
 
-class TastyPieResourceHandler(ResourceHandler):
+class TastyPieResourceHandler(RESTResourceHandler):
     """
     This class implements the IResource interface, specifically tailored for
     interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
