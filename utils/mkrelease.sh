@@ -27,19 +27,11 @@ tmpdir=$(mktemp -d -t drest-$version)
 
 mkdir ${dir}
 mkdir ${dir}/doc
-mkdir ${dir}/downloads
-mkdir ${dir}/pypi
+mkdir ${dir}/sources
 
 # all
-git archive ${version} --prefix=drest-${version}/ | gzip > ${dir}/downloads/drest-${version}.tar.gz
-cp -a ${dir}/downloads/drest-${version}.tar.gz $tmpdir/
-
-# individual
-for i in drest drest.ext.configobj drest.ext.json drest.ext.yaml; do
-    pushd src/$i
-    git archive ${version} --prefix=${i}-${version}/ | gzip > ${dir}/pypi/${i}-${version}.tar.gz
-    popd
-done
+git archive ${version} --prefix=drest-${version}/ | gzip > ${dir}/sources/drest-${version}.tar.gz
+cp -a ${dir}/sources/drest-${version}.tar.gz $tmpdir/
 
 pushd $tmpdir
     tar -zxvf drest-${version}.tar.gz
