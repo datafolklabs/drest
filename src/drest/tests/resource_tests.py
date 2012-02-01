@@ -128,4 +128,12 @@ def test_resource_request_uninstantiated():
                                          path='/test/', 
                                          request=drest.request.RequestHandler)
     
-    
+@raises(drest.exc.dRestResourceError)
+def test_resource_request_uninstantiated_bad():
+    res = drest.resource.ResourceHandler(name='test', 
+                                         path='/test/', 
+                                         request=drest.request.RequestHandler)
+
+@raises(drest.exc.dRestResourceError)
+def test_resource_request_uninstantiated_bad_again():
+    res = drest.resource.ResourceHandler(baseurl=API_URL)
