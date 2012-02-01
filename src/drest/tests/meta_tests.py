@@ -1,8 +1,6 @@
 """Tests for drest.meta."""
 
-from nose.tools import with_setup, ok_, eq_, raises
-from nose import SkipTest
-
+from nose.tools import eq_
 import drest
     
 class Test(drest.meta.MetaMixin):

@@ -2,7 +2,7 @@
 
 SOURCES="src/drest/"
 
-pip install nose coverage
+pip install nose coverage flask
 
 for path in $SOURCES; do
     pushd $path
@@ -12,6 +12,7 @@ done
 
 python utils/drest_test_api.py 2>/dev/null 1>/dev/null &
 coverage erase
+rm -rf coverage_html_report/
 coverage run `which nosetests` --verbosity=3 $SOURCES
 
 

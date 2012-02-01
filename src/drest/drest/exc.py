@@ -10,9 +10,6 @@ class dRestError(Exception):
     def __str__(self):
         return self.msg
     
-    def __unicode__(self):
-        return unicode(self.msg)
-    
 class dRestInterfaceError(dRestError):
     """dRest Interface Errors."""
     

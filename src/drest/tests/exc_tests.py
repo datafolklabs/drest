@@ -1,7 +1,7 @@
 """Tests for drest.exc."""
 
 import os
-from nose.tools import with_setup, ok_, eq_, raises
+from nose.tools import eq_, raises
 import drest
 
 API_URL = os.environ.get('DREST_TEST_API', 'http://localhost:5000/')
@@ -13,7 +13,6 @@ def test_error():
     except drest.exc.dRestError as e:
         e.__repr__()
         eq_(e.msg, 'Error Msg')
-        eq_(e.__unicode__(), unicode(e.msg))
         eq_(e.__str__(), str(e.msg))
         raise
 
@@ -24,7 +23,6 @@ def test_interface_error():
     except drest.exc.dRestInterfaceError as e:
         e.__repr__()
         eq_(e.msg, 'Error Msg')
-        eq_(e.__unicode__(), unicode(e.msg))
         eq_(e.__str__(), str(e.msg))
         raise
 
@@ -37,7 +35,6 @@ def test_request_error():
     except drest.exc.dRestRequestError as e:
         e.__repr__()
         eq_(e.msg, 'Error Msg')
-        eq_(e.__unicode__(), unicode(e.msg))
         eq_(e.__str__(), str(e.msg))
         raise
         
@@ -48,7 +45,6 @@ def test_resource_error():
     except drest.exc.dRestResourceError as e:
         e.__repr__()
         eq_(e.msg, 'Error Msg')
-        eq_(e.__unicode__(), unicode(e.msg))
         eq_(e.__str__(), str(e.msg))
         raise
         
@@ -59,6 +55,5 @@ def test_api_error():
     except drest.exc.dRestAPIError as e:
         e.__repr__()
         eq_(e.msg, 'Error Msg')
-        eq_(e.__unicode__(), unicode(e.msg))
         eq_(e.__str__(), str(e.msg))
         raise

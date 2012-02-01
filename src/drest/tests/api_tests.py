@@ -1,8 +1,7 @@
 """Tests for drest.api."""
 
 import os
-from nose.tools import with_setup, ok_, eq_, raises
-from nose import SkipTest
+from nose.tools import ok_, eq_, raises
 
 import drest
 

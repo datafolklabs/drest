@@ -46,9 +46,6 @@ class Attribute(object):
     
     def __str__(self):
         return str(self.__repr__())    
-    
-    def __unicode__(self):
-        return unicode(self.__repr__())
         
 def validate(interface, obj, members, metas=[]):
     """

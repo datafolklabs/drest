@@ -1,9 +1,7 @@
 """Tests for drest.interface."""
 
 import os
-from nose.tools import with_setup, ok_, eq_, raises
-from nose import SkipTest
-
+from nose.tools import eq_, raises
 import drest
 
 API_URL = os.environ.get('DREST_TEST_API', 'http://localhost:5000/')
@@ -29,7 +27,6 @@ def test_interface():
 def test_attribute():
     attr = drest.interface.Attribute('Attr Description')
     eq_(str(attr), 'Attribute: Attr Description')
-    eq_(attr.__unicode__(), unicode('Attribute: Attr Description'))
 
 def test_validate():
     drest.interface.validate(ITest, TestHandler(), ['test_func'])

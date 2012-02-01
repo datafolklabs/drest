@@ -25,12 +25,19 @@ def index():
 @app.route("/users/<pk>/", methods=['GET', 'PUT', 'DELETE'])
 def get_put_delete(pk):
     if request.method == 'GET':
-        DATA = dict(
-            method='GET',
-            action='get_one',
-            id='1', 
-            username='admin'
-            )
+        if pk == 'schema':
+            DATA = dict(
+                method='GET',
+                action='schema',
+                )
+            return json.dumps(DATA)
+        else:
+            DATA = dict(
+                method='GET',
+                action='get_one',
+                id='1', 
+                username='admin'
+                )
         return json.dumps(DATA)
     elif request.method == 'PUT':
         DATA = dict(

@@ -28,71 +28,6 @@ class IResource(interface.Interface):
             
     """
     
-    def get():
-        """
-        Get all members of the resource, or a single member given an id.
-        
-        Returns: response_obj, content_dict
-        
-        Optional Arguments:
-        
-            resource_id
-                An id, or possibly a unique label, of a specific resource
-                member.
-            
-            params
-                Additional GET parameters to pass.
-           
-        Returns: response_obj, content
-             
-        """
-        
-    def post():
-        """
-        Create a new resource using POST method to a resource.
-        
-        Optional Arguments:
-        
-            params:
-                POST parameters to pass.
-                
-        Returns: response_obj, content
-        
-        """
-    
-    def put():
-        """
-        Update an existing resource using PUT method.
-        
-        Required Arguments:
-        
-            resource_id
-                An id, or possibly a unique label, of a specific resource
-                member.
-            
-            params
-                Additional parameters to pass.
-                
-        Returns: response_obj, content
-        
-        """
-    
-    def delete():
-        """
-        Delete an existing resource using the DELETE method.
-        
-        Required Arguments:
-        
-            resource_id
-                An id, or possibly a unique label, of a specific resource
-                member.
-            
-            params
-                Additional GET parameters to pass.
-                
-        Returns: response_obj, content
-        
-        """
         
 class ResourceHandler(meta.MetaMixin):
     """
@@ -108,6 +43,7 @@ class ResourceHandler(meta.MetaMixin):
         
     def __init__(self, **kw):
         super(ResourceHandler, self).__init__(**kw)
+        self._meta.path = self._meta.path.lstrip('/').rstrip('/')
         
 class RESTResourceHandler(ResourceHandler):
     """
@@ -329,8 +265,8 @@ class TastyPieResourceHandler(RESTResourceHandler):
             response, data = api.users.get('/api/v1/users/234/')
             
         """
-        m = re.match('\/api\/v0/(.*)/(.*)/',resource_uri)
-        return self.get(m.group(2), params)
+        pk = resource_uri.split('/')[-1:]
+        return self.get(pk, params)
 
     @property
     def schema(self):

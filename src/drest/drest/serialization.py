@@ -91,16 +91,13 @@ class JsonSerializationHandler(SerializationHandler):
             # Fix for Python3
             if type(serialized_string) == bytes:
                 serialized_string = serialized_string.decode('utf-8')
-            
+        
             return self.backend.loads(serialized_string)
         except ValueError as e:
             return dict(error=e.args[0])
 
     def serialize(self, dict_obj):
-        try:
-            return self.backend.dumps(dict_obj)
-        except ValueError as e:
-            return dict(error=e.args[0])
+        return self.backend.dumps(dict_obj)
                 
     def get_headers(self):
         headers = {
