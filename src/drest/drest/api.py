@@ -108,7 +108,10 @@ class API(meta.MetaMixin):
             handler = resource_handler
         
         
-        handler = handler(baseurl=self._meta.baseurl, path=path, resource=name)
+        handler = handler(baseurl=self._meta.baseurl, path=path, 
+                          resource=name, 
+                          request=self._request
+                          )
         resource.validate(handler)
         if hasattr(self, name):
             raise exc.dRestResourceError(
@@ -211,8 +214,10 @@ class TastyPieAPI(API):
                 The API Key of that user.
                 
         """
-        self._request.add_header('Authorization', 'ApiKey %s:%s' % (user, api_key))
-    
+        key = 'Authorization'
+        value = 'ApiKey %s:%s' % (user, api_key)
+        self._request.add_header(key, value)
+       
     def find_resources(self):
         """
         Find available resources, and add them via add_resource().

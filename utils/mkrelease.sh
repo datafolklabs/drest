@@ -16,6 +16,9 @@ if [ $? != 0 ]; then
     exit
 fi
 
+# run tests
+./utils/run_tests.sh
+
 short=$(echo $version | awk -F . {' print $1"."$2 '})
 dir=~/drest-${version}
 tmpdir=$(mktemp -d -t drest-$version)

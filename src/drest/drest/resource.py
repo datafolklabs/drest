@@ -45,6 +45,14 @@ class ResourceHandler(meta.MetaMixin):
         super(ResourceHandler, self).__init__(**kw)
         self._meta.path = self._meta.path.lstrip('/').rstrip('/')
         
+        # instantiate it only if its not
+        if not getattr(self._meta.request, '_meta'):
+            self._request = self._meta.request(baseurl=self._meta.baseurl)
+        else:
+            self._request = self._meta.request
+            self._meta.request = self._request.__class__
+        request.validate(self._request)
+        
 class RESTResourceHandler(ResourceHandler):
     """
     This class implements the IResource interface, specifically for 
@@ -80,8 +88,6 @@ class RESTResourceHandler(ResourceHandler):
     """
     def __init__(self, **kw):
         super(RESTResourceHandler, self).__init__(**kw)
-        self._request = self._meta.request(baseurl=self._meta.baseurl)
-        request.validate(self._request)
         
     def request(self, method, path, params={}):
         """
