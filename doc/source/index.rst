@@ -23,7 +23,7 @@ Additional Links:
 
     * `Source Code <http://github.com/derks/drest/>`_
     * `Issue Tracking and Feature Requests <http://github.com/derks/drest/issues/>`_
-    * `PyPi <pypi.python.org/pypi/drest>`_
+    * `PyPi <http://pypi.python.org/pypi/drest>`_
  
 
 Contents:
