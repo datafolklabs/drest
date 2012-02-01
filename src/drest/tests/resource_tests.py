@@ -121,4 +121,11 @@ def test_tastypie_resource_handler():
 def test_tastypie_schema():
     api = drest.api.TastyPieAPI(API_URL)
     eq_(api.users.schema['action'], 'schema')
+
+def test_resource_request_uninstantiated():
+    res = drest.resource.ResourceHandler(baseurl=API_URL, 
+                                         name='test', 
+                                         path='/test/', 
+                                         request=drest.request.RequestHandler)
+    
     

@@ -109,7 +109,7 @@ class API(meta.MetaMixin):
         
         
         handler = handler(baseurl=self._meta.baseurl, path=path, 
-                          resource=name, 
+                          name=name, 
                           request=self._request
                           )
         resource.validate(handler)

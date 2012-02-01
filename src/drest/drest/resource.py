@@ -37,17 +37,25 @@ class ResourceHandler(meta.MetaMixin):
     """
     class Meta:
         baseurl = None
-        resource = None
+        name = None
         path = None
         request = request.RequestHandler
         
     def __init__(self, **kw):
-        super(ResourceHandler, self).__init__(**kw)
+        super(ResourceHandler, self).__init__(**kw)        
+        try:
+            assert self._meta.name, "name required"
+            assert self._meta.path, "path required"
+        except AssertionError as e:
+            raise exc.dRestResourceError(e.args[0])
+            
         self._meta.path = self._meta.path.lstrip('/').rstrip('/')
         
         # instantiate it only if its not
-        if not getattr(self._meta.request, '_meta'):
-            self._request = self._meta.request(baseurl=self._meta.baseurl)
+        if not getattr(self._meta.request, '_meta', None):
+            if not self._meta.baseurl:
+                raise exc.dRestResourceError('baseurl required when passing uninstantiated request handler.')
+            self._request = self._meta.request(self._meta.baseurl)
         else:
             self._request = self._meta.request
             self._meta.request = self._request.__class__
@@ -142,7 +150,7 @@ class RESTResourceHandler(ResourceHandler):
             response, content = self.request('GET', path, 
                                              params=self.filter(params))
         except exc.dRestRequestError as e:
-            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.resource, 
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.name, 
                                                  resource_id)
             raise exc.dRestRequestError(msg, e.response, e.content)
                                         
@@ -168,7 +176,7 @@ class RESTResourceHandler(ResourceHandler):
         try:
             response, content = self.request('POST', path, self.filter(params))
         except exc.dRestRequestError as e:
-            msg = "%s (resource: %s)" % (e.msg, self._meta.resource)
+            msg = "%s (resource: %s)" % (e.msg, self._meta.name)
             raise exc.dRestRequestError(msg, e.response, e.content)
             
         return response, content
@@ -197,7 +205,7 @@ class RESTResourceHandler(ResourceHandler):
         try:
             response, content = self.request('PUT', path, params)
         except exc.dRestRequestError as e:
-            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.resource, 
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.name, 
                                                  resource_id)
             raise exc.dRestRequestError(msg, e.response, e.content)
             
@@ -225,7 +233,7 @@ class RESTResourceHandler(ResourceHandler):
         try:
             response, content = self.request('DELETE', path, params)
         except exc.dRestRequestError as e:
-            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.resource, 
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self._meta.name, 
                                                  resource_id)
             raise exc.dRestRequestError(msg, e.response, e.content)
             

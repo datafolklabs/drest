@@ -166,12 +166,12 @@ class RequestHandler(meta.MetaMixin):
     extra_url_params = {}
     extra_headers= {}
     
-    def __init__(self, **kw):
+    def __init__(self, baseurl, **kw):
         super(RequestHandler, self).__init__(**kw)
         self._extra_params = {}
         self._extra_url_params = {}
         self._extra_headers = {}
-        self._meta.baseurl = self._meta.baseurl.rstrip('/')
+        self._meta.baseurl = baseurl.rstrip('/')
         
         if 'DREST_DEBUG' in os.environ and \
            os.environ['DREST_DEBUG'] in [1, '1']:
