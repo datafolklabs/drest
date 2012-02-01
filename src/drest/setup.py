@@ -6,8 +6,8 @@ VERSION = '0.9.2'
 
 setup(name='drest',
     version=VERSION,
-    description="dREST API Client Library",
-    long_description="dREST API Client Library",
+    description="dRest API Client Library",
+    long_description="dRest API Client Library",
     classifiers=[], 
     keywords='rest api',
     author='BJ Dierkes',
