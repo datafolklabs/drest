@@ -93,7 +93,7 @@ class IResource(interface.Interface):
         
         """
         
-class RESTResourceHandler(meta.MetaMixin):
+class ResourceHandler(meta.MetaMixin):
     """
     This class implements the IResource interface, specifically for 
     interacting with REST-like resources.  It provides convenient functions
@@ -122,7 +122,7 @@ class RESTResourceHandler(meta.MetaMixin):
         
         class MyAPI(drest.api.API):
             class Meta:
-                resource = drest.resource.RESTResourceHandler
+                resource = drest.resource.ResourceHandler
         ...
         
     """
@@ -133,7 +133,7 @@ class RESTResourceHandler(meta.MetaMixin):
         request = request.RequestHandler
         
     def __init__(self, **kw):
-        super(RESTResourceHandler, self).__init__(**kw)
+        super(ResourceHandler, self).__init__(**kw)
         self._request = self._meta.request(baseurl=self._meta.baseurl)
         request.validate(self._request)
         
@@ -279,7 +279,7 @@ class RESTResourceHandler(meta.MetaMixin):
             
         return response, content
 
-class TastyPieResourceHandler(RESTResourceHandler):
+class TastyPieResourceHandler(ResourceHandler):
     """
     This class implements the IResource interface, specifically tailored for
     interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.

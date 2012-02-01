@@ -24,9 +24,6 @@ def validate(obj):
         'add_url_param',
         'add_header',
         'request',
-        'extra_params',
-        'extra_url_params',
-        'extra_headers',
         'handle_response',
         ]
     interface.validate(IRequest, obj, members)
@@ -46,13 +43,12 @@ class IRequest(interface.Interface):
             
     """
     
-    extra_params = interface.Attribute('Parameters to attach to the request data.')
-    extra_url_params = interface.Attribute('Parameters to attach to the url.')
-    extra_headers = interface.Attribute('Headers to pass with each request.')
-    
     def add_param(key, value):
         """
-        Add extra parameters to pass along with the url for *every* request.
+        Add extra parameters to pass along with  *every* request.
+        These are passed with the request 'payload' (serialized if a 
+        serialization handler is enabled).  With GET requests they are
+        appended to the URL.
         
         Required Arguments:
         
@@ -63,7 +59,25 @@ class IRequest(interface.Interface):
                 The value of the parameter to add.
                 
         """
+
+    def add_url_param(key, value):
+        """
+        Similar to 'add_params', however this function adds extra parameters 
+        to the url for *every* request.
+        These are *not* passed with the request 'payload' (serialized if a 
+        serialization handler is enabled) except for GET requests.
         
+        Required Arguments:
+        
+            key
+                The key of the parameter to add.
+            
+            value
+                The value of the parameter to add.
+                
+        """
+
+
     def add_header(key, value):
         """
         Add extra headers to pass along with *every* request.
@@ -78,14 +92,6 @@ class IRequest(interface.Interface):
                 
         """
     
-    def auth():
-        """
-        Perform authentication with the upstream API.  This does not have 
-        any required arguments, but is expected that the implementation will
-        define those.
-        
-        """
-        
     def request(method, path, params={}, headers={}):
         """
         Make a request with the upstream API.
@@ -120,8 +126,27 @@ class IRequest(interface.Interface):
         
 class RequestHandler(meta.MetaMixin):
     """
-    Generic class that handles HTTP requests.
+    Generic class that handles HTTP requests.  Uses the Json Serialization
+    handler by default, but only 'deserializes' response content.  
     
+    Optional Arguments / Meta:
+    
+        baseurl
+            The base url to the API endpoint.  This is generally passed from
+            the base API class.  Default: None.
+        
+        debug
+            Enabled request debugging which prints to console.  Default: False
+        
+        serialization
+            The serialization handler. Default: JsonSerializationHandler.
+        
+        serialize
+            Whether or not to serialize sent data.  Default: False.
+        
+        deserialize
+            Whether or not to deserialize return data.  Default: True.
+            
     """
     class Meta:
         baseurl = None
@@ -136,7 +161,9 @@ class RequestHandler(meta.MetaMixin):
     
     def __init__(self, **kw):
         super(RequestHandler, self).__init__(**kw)
-        
+        self._extra_params = {}
+        self._extra_url_params = {}
+        self._extra_headers = {}
         self._meta.baseurl = self._meta.baseurl.rstrip('/')
         
         if 'DREST_DEBUG' in os.environ and \
@@ -153,18 +180,77 @@ class RequestHandler(meta.MetaMixin):
             
             headers = self._serialization.get_headers()
             for key in headers:
-                self.extra_headers[key] = headers[key]
+                self._extra_headers[key] = headers[key]
         
     def add_param(self, key, value):
-        self.extra_params[key] = value
+        """
+        Adds a key/value to self._extra_params, which is sent with every 
+        request.
+        
+        Required Arguments:
+        
+            key
+                The key of the parameter.
+                
+            value
+                The value of 'key'.
+        
+        """
+        self._extra_params[key] = value
     
     def add_url_param(self, key, value):
-        self.extra_url_params[key] = value
+        """
+        Adds a key/value to self._extra_url_params, which is sent with every
+        request (in the URL).
+        
+        Required Arguments:
+        
+            key
+                The key of the parameter.
+                
+            value
+                The value of 'key'.
+        
+        """
+        self._extra_url_params[key] = value
         
     def add_header(self, key, value):
-        self.extra_headers[key] = value
+        """
+        Adds a key/value to self._extra_headers, which is sent with every
+        request.
+        
+        Required Arguments:
+        
+            key
+                The key of the parameter.
+                
+            value
+                The value of 'key'.
+        
+        """
+        self._extra_headers[key] = value
        
     def _make_request(self, url, method, payload={}, headers={}): 
+        """
+        A wrapper around httplib2.Http.request.
+        
+        Required Arguments:
+        
+            url
+                The url of the request.
+                
+            method
+                The method of the request. I.e. 'GET', 'PUT', 'POST', 'DELETE'.
+            
+        Optional Arguments:
+            
+            payload
+                The urlencoded parameters.
+            
+            headers
+                Additional headers of the request.
+                
+        """
         try:
             http = Http()
             return http.request(url, method, payload, headers=headers)
@@ -189,13 +275,16 @@ class RequestHandler(meta.MetaMixin):
             params
                 Dictionary of keyword arguments.
             
+            headers
+                Additional headers of the request.
+                
         """   
         path = path.lstrip('/').rstrip('/')
-        for key in self.extra_params:
-            params[key] = self.extra_params[key]
+        for key in self._extra_params:
+            params[key] = self._extra_params[key]
         
-        for key in self.extra_headers:
-            headers[key] = self.extra_headers[key]
+        for key in self._extra_headers:
+            headers[key] = self._extra_headers[key]
                 
         if path == '':
             url = self._meta.baseurl
@@ -206,8 +295,8 @@ class RequestHandler(meta.MetaMixin):
             for key in params:
                 self.add_url_param(key, params[key])
         
-        if self.extra_url_params:
-            url = "%s?%s" % (url, urlencode(self.extra_url_params))
+        if self._extra_url_params:
+            url = "%s?%s" % (url, urlencode(self._extra_url_params))
             
         if self._meta.debug:
             print('---')
@@ -248,6 +337,7 @@ class RequestHandler(meta.MetaMixin):
                 
             content
                 The response content.
+                
         """
         if (400 <= response.status <=499) or (response.status == 500):
             msg = "Received HTTP Code %s - %s" % (
@@ -263,6 +353,21 @@ class TastyPieRequestHandler(RequestHandler):
     """
     This class implements the IRequest interface, specifically tailored for
     interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
+    
+    Optional Arguments / Meta:
+    
+        serialize
+            Whether or not to serialize *sent* data.  Default: True.
+            
+        deserialize
+            Whether or not to deserialize return data.  Default: True.
+        
+        serialization
+            The serialization handler.  
+            Default: serialization.JsonSerializationHandler.
+            
+    See :mod:`drest.request.RequestHandler` for additional Meta options and
+    usage.
     
     """
     class Meta:

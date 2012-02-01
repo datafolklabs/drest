@@ -1,0 +1,11 @@
+[run]
+parallel = True
+include =
+    src/drest/drest/*.py
+
+[report]
+ignore_errors = False 
+
+[html]
+directory = coverage_html_report
+

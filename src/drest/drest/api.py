@@ -69,14 +69,13 @@ class API(meta.MetaMixin):
     class Meta:
         baseurl = None
         request = request.RequestHandler
-        resource = resource.RESTResourceHandler
+        resource = resource.ResourceHandler
 
-    resources = []
-    
     def __init__(self, baseurl, **kw):
         kw['baseurl'] = kw.get('baseurl', baseurl)
         super(API, self).__init__(**kw)        
         
+        self._resources = []
         self._request = self._meta.request(baseurl=self._meta.baseurl)
         request.validate(self._request)
         
@@ -92,6 +91,10 @@ class API(meta.MetaMixin):
             
     def request(self, method, path, params={}):
         return self._request.request(method, path, params)
+        
+    @property
+    def resources(self):
+        return self._resources
         
     def add_resource(self, name, resource_handler=None, path=None):
         if not path:
@@ -111,7 +114,7 @@ class API(meta.MetaMixin):
             raise exc.dRestResourceError(
                 "The object '%s' already exist on '%s'" % (name, self))
         setattr(self, name, handler)
-        self.resources.append(name)
+        self._resources.append(name)
         
 class TastyPieAPI(API):
     """
@@ -217,6 +220,6 @@ class TastyPieAPI(API):
         """
         response, data = self.request('GET', '/')
         for resource in list(data.keys()):
-            if resource not in self.resources:
+            if resource not in self._resources:
                 self.add_resource(resource)
     
