@@ -31,8 +31,8 @@ mkdir ${dir}/sources
 mkdir ${dir}/pypi
 
 # all
-git archive ${version} --prefix=drest-${version}/ | gzip > ${dir}/downloads/drest-${version}.tar.gz
-cp -a ${dir}/downloads/drest-${version}.tar.gz $tmpdir/
+git archive ${version} --prefix=drest-${version}/ | gzip > ${dir}/sources/drest-${version}.tar.gz
+cp -a ${dir}/sources/drest-${version}.tar.gz $tmpdir/
 
 # individual
 for i in drest; do
