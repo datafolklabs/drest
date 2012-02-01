@@ -16,7 +16,7 @@ is available online at:
 
     <BR><BR>
     
-0.1.1 - development version (will be released as 0.2.0) 
+0.9.2 - Feb 01, 2012
 ------------------------------------------------------------------------------
 
- - Initial Beta
+ - Initial Beta release.  Future versions will detail bugs/features/etc.
