@@ -6,8 +6,8 @@
 dRest Documentation
 ===================
 
-dRest is a configurable HTTP/REST client library.  It's goal is to make 
-the creation of API clients dead simple, without lacking features.
+dRest is a configurable HTTP/REST client library for Python.  It's goal is to 
+make the creation of API clients dead simple, without lacking features.
 
 Key Features:
 
@@ -21,10 +21,9 @@ Key Features:
     
 Additional Links:
 
-    * `Source Code <http://github.com/derks/drest/>`_
-    * `Issue Tracking and Feature Requests <http://github.com/derks/drest/issues/>`_
-    * `PyPi <http://pypi.python.org/pypi/drest>`_
- 
+    * RTFD: `http://drest.rtfd.org/ <http://drest.rtfd.org/>`_
+    * GITHUB: `http://github.com/derks/drest/ <http://github.com/derks/drest/>`_
+    * PYPI: `http://pypi.python.org/pypi/drest/ <http://pypi.python.org/pypi/drest/>`_
 
 Contents:
 

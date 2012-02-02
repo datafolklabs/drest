@@ -57,7 +57,7 @@ USAGE:
                     )
     
     # POST http://localhost:8000/api/v1/users/
-    response, data = api.users.create(user_data)
+    response, data = api.users.post(user_data)
     
     # Update a resource with primary key '1'
     response, data = api.users.get(1)
@@ -66,7 +66,7 @@ USAGE:
     updated_data['last_name'] = 'Doe'
     
     # PUT http://localhost:8000/api/v1/users/1/
-    response, data = api.users.update(1, updated_data)
+    response, data = api.users.put(1, updated_data)
     
     # Delete a resource with primary key '1'
     # DELETE http://localhost:8000/api/v1/users/1/
