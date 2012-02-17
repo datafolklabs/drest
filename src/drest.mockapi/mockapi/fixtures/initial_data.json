@@ -1,0 +1,73 @@
+[
+    {
+        "pk": 1, 
+        "model": "sites.site", 
+        "fields": {
+            "domain": "dmirr.com", 
+            "name": "dMirr"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "admin", 
+            "first_name": "Admin", 
+            "last_name": "", 
+            "is_active": true, 
+          "is_superuser": true, 
+          "is_staff": true, 
+          "last_login": "2008-09-04 14:25:29", 
+          "groups": [], 
+          "user_permissions": [], 
+          "password": "sha1$96e7e$fb36818e7582f86952eef1e073c5326513fa2431", 
+          "email": "admin@example.com", 
+          "date_joined": "2008-09-04 14:25:29"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "john.doe", 
+            "first_name": "John", 
+            "last_name": "Doe", 
+            "is_active": true, 
+            "is_superuser": false, 
+            "is_staff": true, 
+            "last_login": "2008-09-04 14:25:29", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "sha1$65957$5aef73618574bcf6d0bddb07de8218d11def9712", 
+            "email": "john.doe@example.com", 
+            "date_joined": "2008-09-04 14:25:29"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "tastypie.apikey", 
+        "fields": {
+            "user": 1, 
+            "key": "ADMIN_API_KEY", 
+            "created": "2008-09-04 14:25:29"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "tastypie.apikey", 
+        "fields": {
+            "user": 2, 
+            "key": "JOHN_DOE_API_KEY", 
+            "created": "2008-09-04 14:25:29"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "projects.project", 
+        "fields": {
+            "update_date": "2008-09-04 14:25:29", 
+            "create_date": "2008-09-04 14:25:29", 
+            "label": "Test Project"
+        }
+    }
+]

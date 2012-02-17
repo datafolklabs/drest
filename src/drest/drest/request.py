@@ -166,12 +166,13 @@ class RequestHandler(meta.MetaMixin):
         deserialize = True
         ignore_ssl_validation = False
     
-    def __init__(self, baseurl, **kw):
+    def __init__(self, **kw):
         super(RequestHandler, self).__init__(**kw)
         self._extra_params = {}
         self._extra_url_params = {}
         self._extra_headers = {}
-        self._meta.baseurl = "%s/" % baseurl.rstrip('/')
+        self._auth_credentials = ()
+        #self._meta.baseurl = "%s/" % baseurl.rstrip('/')
         
         if 'DREST_DEBUG' in os.environ and \
            os.environ['DREST_DEBUG'] in [1, '1']:
@@ -189,6 +190,22 @@ class RequestHandler(meta.MetaMixin):
             for key in headers:
                 self._extra_headers[key] = headers[key]
         
+    def set_auth_credentials(self, user, password):
+        """
+        Set the authentication user and password that will be used for 
+        HTTP Basic and Digest Authentication.
+        
+        Required Arguments:
+        
+            user
+                The authentication username.
+                
+            password
+                That user's password.
+                
+        """
+        self._auth_credentials = (user, password)
+
     def add_param(self, key, value):
         """
         Adds a key/value to self._extra_params, which is sent with every 
@@ -264,6 +281,10 @@ class RequestHandler(meta.MetaMixin):
             else:
                 http = Http()
                 
+            if self._auth_credentials:
+                http.add_credentials(self._auth_credentials[0],
+                                     self._auth_credentials[1])
+                                     
             return http.request(url, method, payload, headers=headers)
         except socket.error as e:
             raise exc.dRestAPIError(e.args[1])

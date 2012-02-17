@@ -18,14 +18,12 @@ Connecting with an API
 Authentication
 ^^^^^^^^^^^^^^
 
-By default, drest.api.API.auth() is not implemented, however other specific
-API implementations will likely require that auth() be called.  The following
-is just an example... please see the documentation for the API implementation
-you are using to determine how to use api.auth():
+By default, drest.api.API.auth() implements HTTP Basic Authentication.  This 
+is generally overridden however by specific API's that subclass from api.API().
     
 .. code-block:: python
 
-    api.auth(api_user='john.doe', password='XXXXXXXXXXXX')
+    api.auth('john.doe', 'my_password')
     
     
 Note that authentication may not be necessary for your use case, or for 

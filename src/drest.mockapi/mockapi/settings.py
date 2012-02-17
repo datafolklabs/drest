@@ -50,6 +50,10 @@ MIDDLEWARE_CLASSES = (
 )
 ROOT_URLCONF = 'mockapi.urls'
 TEMPLATE_DIRS = ()
+FIXTURE_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'fixtures'),
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,9 +63,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'tastypie',
     'mockapi.projects',
-)
-FIXTURE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'fixtures'),
 )
 LOGGING = {
     'version': 1,

@@ -55,7 +55,7 @@ class ResourceHandler(meta.MetaMixin):
         if not getattr(self._meta.request, '_meta', None):
             if not self._meta.baseurl:
                 raise exc.dRestResourceError('baseurl required when passing uninstantiated request handler.')
-            self._request = self._meta.request(self._meta.baseurl)
+            self._request = self._meta.request(baseurl=self._meta.baseurl)
         else:
             self._request = self._meta.request
             self._meta.request = self._request.__class__

@@ -1,11 +1,18 @@
 #!/bin/bash
 
 SOURCES="src/drest/"
+
+if [ -z "$VIRTUAL_ENV" ]; then
+    echo "Not running in a virtualenv???  You've got 10 seconds to CTRL-C ..."
+    sleep 10
+fi
+
 pip install nose coverage
 
 for path in $SOURCES; do
     pushd $path
-        python setup.py develop
+        pip install -r requirements.txt
+        python setup.py develop --no-deps
     popd
 done
 
@@ -13,7 +20,13 @@ if [ "$1" == "--without-mockapi" ]; then
     echo "Not running drest.mockapi..."
 else
     echo "Starting drest.mockapi..."
-    python src/drest.mockapi/mockapi/manage.py testserver DREST_MOCKAPI_PROCESS 2>/dev/null 1>/dev/null &
+    pushd src/drest.mockapi
+        pip install -r requirements.txt
+        python setup.py develop --no-deps
+        python mockapi/manage.py testserver DREST_MOCKAPI_PROCESS 2>/dev/null 1>/dev/null &
+        sleep 10
+    popd
+    
 fi
 
 coverage erase

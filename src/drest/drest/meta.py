@@ -7,8 +7,8 @@ class Meta(object):
 
     """
 
-    def __init__(self, **kwargs):
-        self._merge(kwargs)
+    def __init__(self, **kw):
+        self._merge(kw)
 
     def _merge(self, dict_obj):
         for key, value in dict_obj.items():
@@ -21,7 +21,7 @@ class MetaMixin(object):
 
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kw):
         # Get a List of all the Classes we in our MRO, find any attribute named
         #     Meta on them, and then merge them together in order of MRO
         metas = reversed([x.Meta for x in self.__class__.mro() \
@@ -33,12 +33,12 @@ class MetaMixin(object):
             final_meta.update(dict([x for x in list(meta.__dict__.items()) \
                                        if not x[0].startswith("_")]))
 
-        # Update the final Meta with any kwargs passed in
+        # Update the final Meta with any kw passed in
         for key in list(final_meta.keys()):
-            if key in kwargs:
-                final_meta[key] = kwargs.pop(key)
+            if key in kw:
+                final_meta[key] = kw.pop(key)
 
         self._meta = Meta(**final_meta)
 
         # Finally Pass anything unused along the MRO
-        super(MetaMixin, self).__init__(*args, **kwargs)
+        #super(MetaMixin, self).__init__(**kw)

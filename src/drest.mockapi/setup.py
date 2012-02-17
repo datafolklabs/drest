@@ -19,9 +19,9 @@ setup(name='drest.mockapi',
     zip_safe=False,
     test_suite='nose.collector',
     install_requires=[
-        "django>=1.3",
+        "django",
         "django-tastypie",
-        "PyYaml",
+        "python-digest",
         ],
     setup_requires=[
         ],
