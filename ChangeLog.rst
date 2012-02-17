@@ -16,6 +16,22 @@ is available online at:
 
     <BR><BR>
 
+0.9.5 - development (will be released as 0.9.6)
+------------------------------------------------------------------------------
+
+Bug Fixes:
+
+    - None
+ 
+Feature Enhancements:
+
+    - None
+    
+Incompatible Changes:
+
+    - None
+    
+
 0.9.4 - Feb 16, 2012
 ------------------------------------------------------------------------------
 
@@ -26,11 +42,12 @@ Bug Fixes:
 Feature Enhancements:
 
     - Improved test suite, now powered by Django TastyPie!
+    - Added support for Basic HTTP Auth.
     
 Incompatible Changes:
 
-    - drest.api.API.auth() no longer performs anything by default, but rather
-      raises a NotImplementedError.
+    - drest.api.API.auth() now implements Basic HTTP Auth by default rather
+      than just appending the user/password/etc to the URL.
     
     
 .. raw:: html
