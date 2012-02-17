@@ -3,9 +3,9 @@
 import os
 from nose.tools import eq_, raises
 import drest
+from drest.testing import MOCKAPI
 
-API_URL = os.environ.get('DREST_TEST_API', 'http://localhost:5000/')
-api = drest.api.API(API_URL)
+api = drest.api.API(MOCKAPI)
 
 class ITest(drest.interface.Interface):
     pass

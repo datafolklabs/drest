@@ -279,7 +279,8 @@ class TastyPieResourceHandler(RESTResourceHandler):
             response, data = api.users.get_by_uri('/api/v1/users/234/')
             
         """
-        pk = resource_uri.split('/')[-1:]
+        resource_uri = resource_uri.rstrip('/')
+        pk = resource_uri.split('/')[-1]
         return self.get(pk, params)
 
     @property

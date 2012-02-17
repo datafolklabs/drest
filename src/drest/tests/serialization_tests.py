@@ -4,8 +4,6 @@ import os
 import json
 from nose.tools import eq_, raises
 import drest
-    
-API_URL = os.environ.get('DREST_TEST_API', 'http://localhost:5000/')
 
 def test_serialization():
     s = drest.serialization.SerializationHandler()

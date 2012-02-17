@@ -40,7 +40,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   dev
+   usage
    
 .. toctree::
    :maxdepth: 2

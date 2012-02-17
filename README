@@ -5,8 +5,8 @@ AUTHOR: BJ Dierkes <wdierkes@5dollarwhitebox.org>
 
 DESCRIPTION:
 
-dRest is a configurable HTTP/REST client library.  It's goal is to make 
-the creation of API clients dead simple, without lacking features.  
+dRest is a configurable HTTP/REST client library for Python.  It's goal is to 
+make the creation of API clients dead simple, without lacking features.  
 
 FEATURES:
 
@@ -16,7 +16,7 @@ FEATURES:
     * Key pieces of the library are customizable by defined handlers
     * Interface definitions ensure handlers are properly implemented
     * Support for Python 2.6+ and Python 3+
-    * 100% test coverage
+    * 100% test coverage via Nose
     
 USAGE:
 
@@ -24,10 +24,6 @@ USAGE:
 
     # Create a generic client api object
     api = drest.API('http://localhost:8000/api/v1/')
-    
-    # By default, auth() appends its params to the URL so name the parameters 
-    # however you want them passed as.
-    api.auth(api_user='john.doe', password='XXXXXXXXXXXX')
     
     # Make calls openly via any HTTP Method, and any path
     # GET http://localhost:8000/api/v1/users/1/

@@ -1,61 +1,6 @@
-Quick Start Guide
-=================
-
-The following outlines installation of dRest, as well as quick starting a
-new api client.
-
-Installation
-------------
-
-It is recommended to work out of a `VirtualENV <http://pypi.python.org/pypi/virtualenv>`_ 
-for development, which is reference throughout this documentation.  VirtualENV
-is easily installed on most platforms either with 'easy_install' or 'pip' or
-via your OS distributions packaging system (yum, apt, brew, etc).
-
-Creating a Virtual Environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: text
-
-    $ virtualenv --no-site-packages ~/env/drest/
+Quickstart Guide
+================
     
-    $ source ~/env/drest/bin/activate
-    
-
-When installing drest, ensure that your development environment is active
-by sourcing the activate script (as seen above).
-
-
-Installing Development Version From Git
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: text
-
-    (drest) $ git clone git://github.com/derks/drest.git
-    
-    (drest) $ cd src/drest/
-    
-    (drest) $ python setup.py install
-    
-
-To run tests, do the following from the 'root' directory:
-
-.. code-block:: text
-    
-    (drest) $ pip install nose
-    
-    (drest) $ python setup.py nosetests
-
-
-Installing Stable Versions From PyPi
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: text
-
-    $ pip install drest
-    
-    
-
 A REST Client Example
 ---------------------
 
@@ -73,21 +18,24 @@ Connecting with an API
 Authentication
 ^^^^^^^^^^^^^^
 
-By default, drest.api.API.auth() just appends its params to the URL.  You can
-name the parameters however you want them passed as.
+By default, drest.api.API.auth() is not implemented, however other specific
+API implementations will likely require that auth() be called.  The following
+is just an example... please see the documentation for the API implementation
+you are using to determine how to use api.auth():
     
 .. code-block:: python
 
-    # Appends: ?api_user='john.doe&password='XXXXXXXXXXXX'
     api.auth(api_user='john.doe', password='XXXXXXXXXXXX')
     
-Note that authentication may not be necessary for your use case.
+    
+Note that authentication may not be necessary for your use case, or for 
+read-only API's.
 
 Making Requests
 ^^^^^^^^^^^^^^^
 
-Requests can be made openly by specifying the method (GET, PUT, POST, DELETE),
-as well as the path (after the baseurl).
+Requests can be made openly by specifying the method 
+(GET, PUT, POST, DELETE, ...), as well as the path (after the baseurl).
 
 .. code-block:: python
 
@@ -226,3 +174,27 @@ See :mod:`drest.serialization`.
 The above is fictitious data returned from a TastyPie API.  What is returned
 by an API is unique to that API therefore you should expect the 'data' to be
 different that the above.
+
+
+Connecting Over SSL
+-------------------
+
+Though this is documented elsewhere, it is a pretty common question.  Often
+times API services are SSL enabled (over https://) but do not possess a valid
+or active SSL certificate.  Anytime an API service has an invalid, or usually
+self-signed certificate, you will receive an SSL error similar to:
+
+.. code-block:: text
+
+    [Errno 1] _ssl.c:503: error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed
+    
+
+In order to work around such situations, simply pass the following to your 
+api:
+
+.. code-block:: python
+
+    api = drest.API('https://example.com/api/v1/', ignore_ssl_validation=True)
+    
+
+    

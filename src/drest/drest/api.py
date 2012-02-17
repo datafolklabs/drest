@@ -4,19 +4,25 @@ from drest import interface, resource, request, serialization, meta, exc
 
 class API(meta.MetaMixin):
     """
-    Required Arguments:
+    Arguments:
     
         baseurl
-            The base url to the API endpoint.
+            Translated to self._meta.baseurl (for convenience).
             
     Optional Arguments and Meta:
         
+        baseurl
+            The base url to the API endpoint.
+            
         request
             The Request Handler class that handles requests
             
         resource
             The Resource handler class that handles resources.
             
+        ignore_ssl_validation
+            Whether or not to ignore ssl validation errors.  This option
+            is passed down to the request handler.  Default: False.
             
     Usage
     
@@ -70,24 +76,23 @@ class API(meta.MetaMixin):
         baseurl = None
         request = request.RequestHandler
         resource = resource.RESTResourceHandler
-
-    def __init__(self, baseurl, **kw):
-        kw['baseurl'] = kw.get('baseurl', baseurl)
+        ignore_ssl_validation = False
+        
+    def __init__(self, baseurl=None, **kw):
+        kw['baseurl'] = baseurl
         super(API, self).__init__(**kw)        
         
         self._resources = []
-        self._request = self._meta.request(baseurl=self._meta.baseurl)
+        self._request = self._meta.request(**kw)
         request.validate(self._request)
         
-    def auth(self, **kw):
+    def auth(self, *args, **kw):
         """
-        In this implementation, we simply add any keywords passed to 
-        self.extra_url_params so that they are passed along with each request
-        in the url. For example, auth(user='john.doe', api_key='XXXXX').
+        By default this method is not implemented.  Custom API classes should
+        subclass from drest.api.API, and override auth().
                 
         """
-        for key in kw:
-            self._request.add_url_param(key, kw[key])
+        raise NotImplementedError
             
     def request(self, method, path, params={}):
         return self._request.request(method, path, params)

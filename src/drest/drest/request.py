@@ -153,6 +153,9 @@ class RequestHandler(meta.MetaMixin):
         
         deserialize
             Whether or not to deserialize return data.  Default: True.
+        
+        ignore_ssl_validation
+            Whether or not to ignore ssl validation errors.  Default: False
             
     """
     class Meta:
@@ -161,17 +164,14 @@ class RequestHandler(meta.MetaMixin):
         serialization = serialization.JsonSerializationHandler
         serialize = False
         deserialize = True
-    
-    extra_params = {}
-    extra_url_params = {}
-    extra_headers= {}
+        ignore_ssl_validation = False
     
     def __init__(self, baseurl, **kw):
         super(RequestHandler, self).__init__(**kw)
         self._extra_params = {}
         self._extra_url_params = {}
         self._extra_headers = {}
-        self._meta.baseurl = baseurl.rstrip('/')
+        self._meta.baseurl = "%s/" % baseurl.rstrip('/')
         
         if 'DREST_DEBUG' in os.environ and \
            os.environ['DREST_DEBUG'] in [1, '1']:
@@ -259,7 +259,11 @@ class RequestHandler(meta.MetaMixin):
                 
         """
         try:
-            http = Http()
+            if self._meta.ignore_ssl_validation:
+                http = Http(disable_ssl_certificate_validation=True)
+            else:
+                http = Http()
+                
             return http.request(url, method, payload, headers=headers)
         except socket.error as e:
             raise exc.dRestAPIError(e.args[1])
@@ -286,7 +290,7 @@ class RequestHandler(meta.MetaMixin):
                 Additional headers of the request.
                 
         """   
-        path = path.lstrip('/').rstrip('/')
+        path = path.strip('/')
         for key in self._extra_params:
             params[key] = self._extra_params[key]
         
@@ -296,7 +300,7 @@ class RequestHandler(meta.MetaMixin):
         if path == '':
             url = self._meta.baseurl
         else:
-            url = "%s/%s/" % (self._meta.baseurl, path)
+            url = "%s%s/" % (self._meta.baseurl, path)
 
         if method == 'GET':
             for key in params:

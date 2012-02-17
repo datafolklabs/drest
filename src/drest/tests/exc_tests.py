@@ -3,8 +3,9 @@
 import os
 from nose.tools import eq_, raises
 import drest
+from drest.testing import MOCKAPI
 
-API_URL = os.environ.get('DREST_TEST_API', 'http://localhost:5000/')
+api = drest.api.API(MOCKAPI)
 
 @raises(drest.exc.dRestError)
 def test_error():
@@ -29,7 +30,7 @@ def test_interface_error():
 @raises(drest.exc.dRestRequestError)
 def test_request_error():
     try:
-        api = drest.api.API(API_URL)
+        api = drest.api.API(MOCKAPI)
         response, data = api.request('GET', '/')
         raise drest.exc.dRestRequestError('Error Msg', response, data)
     except drest.exc.dRestRequestError as e:
