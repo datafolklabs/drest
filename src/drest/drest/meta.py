@@ -40,5 +40,5 @@ class MetaMixin(object):
 
         self._meta = Meta(**final_meta)
 
-        # Finally Pass anything unused along the MRO
-        #super(MetaMixin, self).__init__(**kw)
+        # FIX ME: object.__init__() doesn't take params without exception
+        super(MetaMixin, self).__init__()

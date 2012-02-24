@@ -331,10 +331,8 @@ class RequestHandler(meta.MetaMixin):
             url = "%s?%s" % (url, urlencode(self._extra_url_params))
             
         if self._meta.debug:
-            print('---')
             print('DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
                    (method, url, params, headers))
-            print('---')
 
         if self._meta.serialize: 
             payload = self._serialization.serialize(params)
