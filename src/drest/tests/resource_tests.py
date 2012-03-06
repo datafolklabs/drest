@@ -118,18 +118,3 @@ def test_tastypie_schema():
     api = drest.api.TastyPieAPI(MOCKAPI)
     eq_(api.users.schema['allowed_list_http_methods'], ['get'])
 
-def test_resource_request_uninstantiated():
-    res = drest.resource.ResourceHandler(baseurl=MOCKAPI, 
-                                         name='test', 
-                                         path='/test/', 
-                                         request=drest.request.RequestHandler)
-    
-@raises(drest.exc.dRestResourceError)
-def test_resource_request_uninstantiated_bad():
-    res = drest.resource.ResourceHandler(name='test', 
-                                         path='/test/', 
-                                         request=drest.request.RequestHandler)
-
-@raises(drest.exc.dRestResourceError)
-def test_resource_request_uninstantiated_bad_again():
-    res = drest.resource.ResourceHandler(baseurl=MOCKAPI)

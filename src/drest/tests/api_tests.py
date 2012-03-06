@@ -8,23 +8,42 @@ from drest.testing import MOCKAPI
 
 api = drest.api.API(MOCKAPI)
 
+class MyAPI(drest.api.TastyPieAPI):
+    class Meta:
+        baseurl = MOCKAPI
+        extra_headers = dict(foo='bar')
+        extra_params = dict(foo2='bar2')
+        extra_url_params = dict(foo3='bar3')
+        
 def test_auth():
     api.auth('john.doe', 'password')
-    eq_(api._request._auth_credentials[0], 'john.doe')
-    eq_(api._request._auth_credentials[1], 'password')
+    eq_(api.request._auth_credentials[0], 'john.doe')
+    eq_(api.request._auth_credentials[1], 'password')
     
 def test_custom_auth():
     class MyAPI(drest.API):
         def auth(self, *args, **kw):
             for key in kw:
-                self._request.add_url_param(key, kw[key])
+                self.request.add_url_param(key, kw[key])
     myapi = MyAPI(MOCKAPI)
     myapi.auth(user='john.doe', password='password')
-    eq_(myapi._request._extra_url_params['user'], 'john.doe')
-    eq_(myapi._request._extra_url_params['password'], 'password')
+    eq_(myapi.request._extra_url_params['user'], 'john.doe')
+    eq_(myapi.request._extra_url_params['password'], 'password')
+    
+def test_extra_headers():
+    api = MyAPI()
+    eq_('bar', api.request._extra_headers['foo'])
+    
+def test_extra_params():
+    api = MyAPI()
+    eq_('bar2', api.request._extra_params['foo2'])
+    
+def test_extra_url_params():
+    api = MyAPI()
+    eq_('bar3', api.request._extra_url_params['foo3'])
     
 def test_request():
-    response, data = api.request('GET', '/')
+    response, data = api.make_request('GET', '/')
     res = 'users' in data
     ok_(res)
 
@@ -48,7 +67,7 @@ def test_tastypieapi_via_apikey_auth():
     api.auth(user='john.doe', api_key='JOHN_DOE_API_KEY')
     
     # verify headers
-    eq_(api._request._extra_headers, 
+    eq_(api.request._extra_headers, 
         {'Content-Type': 'application/json', 
          'Authorization': 'ApiKey john.doe:JOHN_DOE_API_KEY'})
     
@@ -69,8 +88,8 @@ def test_tastypieapi_via_basic_auth():
     api = drest.api.TastyPieAPI(MOCKAPI, auth_mech='basic')
     api.auth(user='john.doe', password='password')
 
-    eq_(api._request._auth_credentials[0], 'john.doe')
-    eq_(api._request._auth_credentials[1], 'password')
+    eq_(api.request._auth_credentials[0], 'john.doe')
+    eq_(api.request._auth_credentials[1], 'password')
     
     # verify resources
     res = 'users' in api.resources

@@ -31,7 +31,7 @@ def test_interface_error():
 def test_request_error():
     try:
         api = drest.api.API(MOCKAPI)
-        response, data = api.request('GET', '/')
+        response, data = api.make_request('GET', '/')
         raise drest.exc.dRestRequestError('Error Msg', response, data)
     except drest.exc.dRestRequestError as e:
         e.__repr__()

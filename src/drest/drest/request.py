@@ -15,7 +15,7 @@ else:
 import socket
 from httplib2 import Http
 
-from drest import exc, interface, meta, serialization
+from drest import exc, interface, meta, serialization, response
 
 def validate(obj):
     """Validates a handler implementation against the IRequest interface."""
@@ -23,13 +23,12 @@ def validate(obj):
         'add_param',
         'add_url_param',
         'add_header',
-        'request',
+        'make_request',
         'handle_response',
         ]
     metas = [
-        'baseurl',
-        'debug',
-        'serialization',
+        'response_handler',
+        'serialization_handler',
         'serialize',
         'deserialize',
         ]
@@ -99,14 +98,15 @@ class IRequest(interface.Interface):
                 
         """
     
-    def request(method, path, params={}, headers={}):
+    def make_request(method, path, params={}, headers={}):
         """
         Make a request with the upstream API.
         
         Required Arguments:
         
             method
-                The HTTP method to request as.  I.e. ['GET', 'POST', 'PUT', 'DELETE'].
+                The HTTP method to request as.  I.e. ['GET', 'POST', 'PUT', 
+                'DELETE', '...'].
         
             path
                 The of the request url *after* the baseurl.
@@ -137,59 +137,79 @@ class RequestHandler(meta.MetaMixin):
     handler by default, but only 'deserializes' response content.  
     
     Optional Arguments / Meta:
-    
-        baseurl
-            The base url to the API endpoint.  This is generally passed from
-            the base API class.  Default: None.
-        
+
         debug
-            Enabled request debugging which prints to console.  Default: False
-        
-        serialization
-            The serialization handler. Default: JsonSerializationHandler.
-        
+            Boolean.  Toggle debug console output.  Default: False.
+            
+        ignore_ssl_validation
+            Boolean.  Whether or not to ignore ssl validation errors.  
+            Default: False
+            
+        response_handler
+            An un-instantiated Response Handler class used to return 
+            responses to the caller.  Default: drest.response.ResponseHandler.
+            
+        serialization_handler
+            An un-instantiated Serialization Handler class used to 
+            serialize/deserialize data.  
+            Default: drest.serialization.JsonSerializationHandler.
+            
         serialize
-            Whether or not to serialize sent data.  Default: False.
+            Boolean.  Whether or not to serialize data before sending 
+            requests.  Default: False.
         
         deserialize
-            Whether or not to deserialize return data.  Default: True.
-        
-        ignore_ssl_validation
-            Whether or not to ignore ssl validation errors.  Default: False
+            Boolean.  Whether or not to deserialize data before returning
+            the Response object.  Default: True.
+            
+        trailing_slash
+            Boolean.  Whether or not to append a trailing slash to the 
+            request url.  Default: True.
             
     """
     class Meta:
-        baseurl = None
         debug = False
-        serialization = serialization.JsonSerializationHandler
+        ignore_ssl_validation = False
+        response_handler = response.ResponseHandler
+        serialization_handler = serialization.JsonSerializationHandler
         serialize = False
         deserialize = True
-        ignore_ssl_validation = False
-    
+        trailing_slash = True
+        
     def __init__(self, **kw):
         super(RequestHandler, self).__init__(**kw)
         self._extra_params = {}
         self._extra_url_params = {}
         self._extra_headers = {}
         self._auth_credentials = ()
-        #self._meta.baseurl = "%s/" % baseurl.rstrip('/')
         
         if 'DREST_DEBUG' in os.environ and \
            os.environ['DREST_DEBUG'] in [1, '1']:
             self._meta.debug = True
-        
-        if not self._meta.serialization:
-            self._meta.serialize = False
-            self._meta.deserialize = False
-            
-        else:
-            self._serialization = self._meta.serialization()
-            serialization.validate(self._serialization)
-            
+    
+        response.validate(self._meta.response_handler)
+        if self._meta.serialization_handler:
+            serialization.validate(self._meta.serialization_handler)
+            self._serialization = self._meta.serialization_handler(**kw)
             headers = self._serialization.get_headers()
             for key in headers:
-                self._extra_headers[key] = headers[key]
-        
+                self.add_header(key, headers[key])
+        else:
+            self._meta.serialize = False
+            self._meta.deserialize = False
+                            
+    def _serialize(self, data):
+        if self._meta.serialize:
+            return self._serialization.serialize(data)
+        else:
+            return data
+    
+    def _deserialize(self, data):
+        if self._meta.deserialize:
+            return self._serialization.deserialize(data)
+        else:
+            return data
+ 
     def set_auth_credentials(self, user, password):
         """
         Set the authentication user and password that will be used for 
@@ -289,40 +309,41 @@ class RequestHandler(meta.MetaMixin):
         except socket.error as e:
             raise exc.dRestAPIError(e.args[1])
             
-    def request(self, method, path, params={}, headers={}):
+    def make_request(self, method, url, params={}, headers={}):
         """
         Make a call to a resource based on path, and parameters.
     
         Required Arguments:
     
             method 
-                One of HEAD, GET, POST, DELETE.
+                One of HEAD, GET, POST, PUT, PATCH, DELETE, etc.
                 
-            path
-                The path to the resource, after baseurl.
-            
+            url
+                The full url of the request (without any parameters).  Any 
+                params (with GET method) and self.extra_url_params will be 
+                added to this url.
                 
         Optional Arguments:
         
             params
-                Dictionary of keyword arguments.
+                Dictionary of additional (one-time) keyword arguments for the
+                request.
             
             headers
-                Additional headers of the request.
+                Dictionary of additional (one-time) headers of the request.
                 
         """   
-        path = path.strip('/')
         for key in self._extra_params:
             params[key] = self._extra_params[key]
         
         for key in self._extra_headers:
             headers[key] = self._extra_headers[key]
-                
-        if path == '':
-            url = self._meta.baseurl
+              
+        if self._meta.trailing_slash:
+            url = "%s/" % url.strip('/')  
         else:
-            url = "%s%s/" % (self._meta.baseurl, path)
-
+            url = url.strip('/')
+        
         if method == 'GET':
             for key in params:
                 self.add_url_param(key, params[key])
@@ -335,7 +356,7 @@ class RequestHandler(meta.MetaMixin):
                    (method, url, params, headers))
 
         if self._meta.serialize: 
-            payload = self._serialization.serialize(params)
+            payload = self._serialize(params)
             response, content = self._make_request(url, method, payload,
                                                    headers=headers)
         else:
@@ -346,8 +367,8 @@ class RequestHandler(meta.MetaMixin):
 
         if self._meta.deserialize:
             response.serialized_content = content
-            content = self._serialization.deserialize(content)
-    
+            content = self._deserialize(content)
+
         response.method = method
         response.payload = payload
         response.url = url
@@ -384,20 +405,7 @@ class TastyPieRequestHandler(RequestHandler):
     This class implements the IRequest interface, specifically tailored for
     interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
     
-    Optional Arguments / Meta:
-    
-        serialize
-            Whether or not to serialize *sent* data.  Default: True.
-            
-        deserialize
-            Whether or not to deserialize return data.  Default: True.
-        
-        serialization
-            The serialization handler.  
-            Default: serialization.JsonSerializationHandler.
-            
-    See :mod:`drest.request.RequestHandler` for additional Meta options and
-    usage.
+    See :mod:`drest.request.RequestHandler` for Meta options and usage.
     
     """
     class Meta:

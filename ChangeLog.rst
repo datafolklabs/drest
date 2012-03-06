@@ -29,7 +29,12 @@ Feature Enhancements:
     
 Incompatible Changes:
 
-    - None
+    - api._request is now api.request.  api.request (old function) is now
+    api.make_request()
+    
+    - Lots of code refactoring.. numerous minor changes may break 
+    compatibility if using backend functions, but not likely if accessing
+    the high level api functions.
     
 
 0.9.4 - Feb 16, 2012

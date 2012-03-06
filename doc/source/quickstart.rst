@@ -38,7 +38,7 @@ Requests can be made openly by specifying the method
 .. code-block:: python
 
     # GET http://localhost:8000/api/v1/users/1/
-    response, data = api.request('GET', '/users/1/')
+    response, data = api.make_request('GET', '/users/1/')
 
 Additionally, you can add a resource which makes access to the API more 
 native and programatic.

@@ -10,51 +10,58 @@ from drest.testing import MOCKAPI
 
 def test_debug():
     os.environ['DREST_DEBUG'] = '1'
-    req = drest.request.RequestHandler(baseurl=MOCKAPI, debug=True)
-    req.request('GET', '/')
+    req = drest.request.RequestHandler(debug=True)
+    req.make_request('GET', '%s/' % MOCKAPI)
     eq_(req._meta.debug, True)
     os.environ['DREST_DEBUG'] = '0'
 
 def test_no_serialization():
-    req = drest.request.RequestHandler(baseurl=MOCKAPI, serialization=False)
-    response, data = req.request('GET', '/users/1/')
+    req = drest.request.RequestHandler(serialization_handler=None)
+    response, data = req.make_request('GET', '%s/users/1/' % MOCKAPI)
+    eq_(data, req._deserialize(data))
+    eq_(dict(foo='bar'), req._serialize(dict(foo='bar')))
     eq_(json.loads(data.decode('utf-8'))['username'], 'admin')
 
 @raises(drest.exc.dRestAPIError)
 def test_socket_error():
-    req = drest.request.RequestHandler(baseurl='http://localhost/bogus/api')
+    req = drest.request.RequestHandler()
     try:
-        response, data = req.request('GET', '/users/1/')
+        response, data = req.make_request('GET', 'http://localhost/bogus/')
     except drest.exc.dRestAPIError as e:
         eq_(e.msg, 'Connection refused')
         raise
         
+def test_trailing_slash():
+    req = drest.request.RequestHandler(trailing_slash=False)
+    response, data = req.make_request('GET', '%s/users/1/' % MOCKAPI)
+    
 def test_extra_params():
     params = {}
     params['label'] = "Project Label %s" % random()
-    req = drest.request.TastyPieRequestHandler(baseurl=MOCKAPI)
+    req = drest.request.TastyPieRequestHandler()
     req.add_param('label', params['label'])
     eq_(req._extra_params, params)
-    response, data = req.request('POST', '/projects/', params)
+    response, data = req.make_request('POST', '%s/projects/' % MOCKAPI, 
+                                      params)
 
 def test_extra_url_params():
-    req = drest.request.RequestHandler(baseurl=MOCKAPI)
+    req = drest.request.RequestHandler()
     req.add_url_param('username__icontains', 'ad')
     eq_(req._extra_url_params, dict(username__icontains='ad'))
-    response, data = req.request('GET', '/users/')
+    response, data = req.make_request('GET', '%s/users/' % MOCKAPI)
     eq_(data['objects'][0]['username'], 'admin')
     
     
 def test_extra_headers():
-    req = drest.request.RequestHandler(baseurl=MOCKAPI, serialization=False)
+    req = drest.request.RequestHandler(serialization_handler=None)
     req.add_header('some_key', 'some_value')
     eq_(req._extra_headers, dict(some_key='some_value'))
-    response, data = req.request('GET', '/users/')
+    response, data = req.make_request('GET', '%s/users/' % MOCKAPI)
     
 @raises(drest.exc.dRestRequestError)
 def test_handle_response():
-    req = drest.request.RequestHandler(baseurl=MOCKAPI)
-    response, data = req.request('GET', '/users/1/')
+    req = drest.request.RequestHandler()
+    response, data = req.make_request('GET', '%s/users/1/' % MOCKAPI)
     response.status = 404
     try:
         req.handle_response(response, {})
@@ -63,7 +70,7 @@ def test_handle_response():
         raise
 
 def test_ignore_ssl_validation():
-    req = drest.request.RequestHandler(baseurl=MOCKAPI, serialization=False, 
+    req = drest.request.RequestHandler(serialization_handler=None, 
                                        ignore_ssl_validation=True)
-    req.request('GET', '/users/')
+    req.make_request('GET', '%s/users/' % MOCKAPI)
     
