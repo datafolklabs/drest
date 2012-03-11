@@ -329,6 +329,22 @@ class RequestHandler(meta.MetaMixin):
             except socket.error as e:
                 raise exc.dRestAPIError(e.args[1])
             
+    def _get_complete_url(self, method, url, params):
+        if self._meta.trailing_slash:
+            url = "%s/" % url.strip('/')  
+        else:
+            url = url.strip('/')
+        
+        if method == 'GET':
+            url_params = dict(self._extra_url_params, **params)
+        else:
+            url_params = self._extra_url_params
+            
+        if url_params:
+            url = "%s?%s" % (url, urlencode(self._extra_url_params))
+            
+        return url
+        
     def make_request(self, method, url, params={}, headers={}):
         """
         Make a call to a resource based on path, and parameters.
@@ -353,24 +369,10 @@ class RequestHandler(meta.MetaMixin):
                 Dictionary of additional (one-time) headers of the request.
                 
         """   
-        for key in self._extra_params:
-            params[key] = self._extra_params[key]
+        params = dict(self._extra_params, **params)
+        headers = dict(self._extra_headers, **headers)
+        url = self._get_complete_url(method, url, params)
         
-        for key in self._extra_headers:
-            headers[key] = self._extra_headers[key]
-              
-        if self._meta.trailing_slash:
-            url = "%s/" % url.strip('/')  
-        else:
-            url = url.strip('/')
-        
-        if method == 'GET':
-            for key in params:
-                self.add_url_param(key, params[key])
-        
-        if self._extra_url_params:
-            url = "%s?%s" % (url, urlencode(self._extra_url_params))
-            
         if self._meta.debug:
             print('DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
                    (method, url, params, headers))

@@ -21,7 +21,8 @@ is available online at:
 
 Bug Fixes:
 
-    - None
+    - :issue:`9` - GET params incorrectly stored as permanent 
+      _extra_url_params.
  
 Feature Enhancements:
 
