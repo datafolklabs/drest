@@ -208,6 +208,17 @@ class TastyPieAPI(API):
     This class implements an API client, specifically tailored for
     interfacing with `TastyPie <http://django-tastypie.readthedocs.org/en/latest>`_.
     
+    Optional / Meta Arguments:
+    
+        auth_mech
+            The auth mechanism to use.  One of ['basic', 'api_key'].
+            Default: 'api_key'.
+            
+        auto_detect_resources
+            Boolean.  Whether or not to auto detect, and add resource objects
+            to the api.  Default: True.
+            
+    
     Authentication Mechanisms
     
     Currently the only supported authentication mechanism are:
@@ -287,7 +298,6 @@ class TastyPieAPI(API):
         super(TastyPieAPI, self).__init__(*args, **kw)
         if self._meta.auto_detect_resources:
             self.find_resources()
-
     
     def auth(self, *args, **kw):
         """

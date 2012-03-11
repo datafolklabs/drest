@@ -182,6 +182,7 @@ class RequestHandler(meta.MetaMixin):
         self._extra_url_params = {}
         self._extra_headers = {}
         self._auth_credentials = ()
+        self._http = None
         
         if 'DREST_DEBUG' in os.environ and \
            os.environ['DREST_DEBUG'] in [1, '1']:
@@ -225,7 +226,8 @@ class RequestHandler(meta.MetaMixin):
                 
         """
         self._auth_credentials = (user, password)
-
+        self._clear_http()
+        
     def add_param(self, key, value):
         """
         Adds a key/value to self._extra_params, which is sent with every 
@@ -273,7 +275,27 @@ class RequestHandler(meta.MetaMixin):
         
         """
         self._extra_headers[key] = value
-       
+    
+    def _get_http(self):
+        """
+        Returns either the existing (cached) httplib2.Http() object, or
+        a new instance of one.
+        
+        """        
+        if self._http == None:
+            if self._meta.ignore_ssl_validation:
+                self._http = Http(disable_ssl_certificate_validation=True)
+            else:
+                self._http = Http()
+
+            if self._auth_credentials:
+                self._http.add_credentials(self._auth_credentials[0],
+                                           self._auth_credentials[1])
+        return self._http
+
+    def _clear_http(self):
+        self._http = None
+            
     def _make_request(self, url, method, payload={}, headers={}): 
         """
         A wrapper around httplib2.Http.request.
@@ -296,18 +318,16 @@ class RequestHandler(meta.MetaMixin):
                 
         """
         try:
-            if self._meta.ignore_ssl_validation:
-                http = Http(disable_ssl_certificate_validation=True)
-            else:
-                http = Http()
-                
-            if self._auth_credentials:
-                http.add_credentials(self._auth_credentials[0],
-                                     self._auth_credentials[1])
-                                     
-            return http.request(url, method, payload, headers=headers)
+            return self._get_http().request(url, method, payload, 
+                                            headers=headers)
         except socket.error as e:
-            raise exc.dRestAPIError(e.args[1])
+            # Try again just in case there was an issue with the cached _http
+            try:
+                self._clear_http()
+                return self._get_http().request(url, method, payload, 
+                                                headers=headers)
+            except socket.error as e:
+                raise exc.dRestAPIError(e.args[1])
             
     def make_request(self, method, url, params={}, headers={}):
         """
