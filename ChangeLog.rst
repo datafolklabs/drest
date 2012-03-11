@@ -25,7 +25,7 @@ Bug Fixes:
  
 Feature Enhancements:
 
-    - None
+    - :issue:`5`, :issue:`8` - Request object is now exposed publicly.
     
 Incompatible Changes:
 

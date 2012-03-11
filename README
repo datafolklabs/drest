@@ -27,7 +27,7 @@ USAGE:
     
     # Make calls openly via any HTTP Method, and any path
     # GET http://localhost:8000/api/v1/users/1/
-    response, data = api.request('GET', '/users/1/')
+    response, data = api.make_request('GET', '/users/1/')
     
     # Or attach a resource
     api.add_resource('users')
