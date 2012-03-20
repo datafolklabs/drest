@@ -27,8 +27,8 @@ Bug Fixes:
 Feature Enhancements:
 
     - :issue:`5`, :issue:`8` - Request object is now exposed publicly.
+    - :issue:`6` - Add capability to suppress final forward-slash
     - :issue:`7` - Cache http object for improved performance.
-
     
 Incompatible Changes:
 
@@ -39,7 +39,10 @@ Incompatible Changes:
       compatibility if using backend functions, but not likely if accessing
       the high level api functions.
     
-
+    - Every request now returns a drest.response.ResponseHandler object 
+      rather than a (response, data) tuple.  
+      
+      
 0.9.4 - Feb 16, 2012
 ------------------------------------------------------------------------------
 

@@ -29,6 +29,14 @@ def test_custom_auth():
     myapi.auth(user='john.doe', password='password')
     eq_(myapi.request._extra_url_params['user'], 'john.doe')
     eq_(myapi.request._extra_url_params['password'], 'password')
+
+def test_wrapped_meta():
+    class MyAPI2(drest.api.TastyPieAPI):
+        class Meta:
+            trailing_slash = False
+
+    myapi = MyAPI2(MOCKAPI)
+    eq_(myapi.request._meta.trailing_slash, False)
     
 def test_extra_headers():
     api = MyAPI()
@@ -43,20 +51,20 @@ def test_extra_url_params():
     eq_('bar3', api.request._extra_url_params['foo3'])
     
 def test_request():
-    response, data = api.make_request('GET', '/')
-    res = 'users' in data
+    response = api.make_request('GET', '/')
+    res = 'users' in response.data
     ok_(res)
 
 def test_add_resource():
     api.add_resource('users')
-    response, data = api.users.get()
+    response = api.users.get()
     
     api.add_resource('users2', path='/users/')
-    response, data = api.users2.get()
+    response = api.users2.get()
     
     api.add_resource('users3', path='/users/', 
                      resource_handler=drest.resource.RESTResourceHandler)
-    response, data = api.users3.get()
+    response = api.users3.get()
     
 @raises(drest.exc.dRestResourceError)
 def test_duplicate_resource():
@@ -78,11 +86,11 @@ def test_tastypieapi_via_apikey_auth():
     ok_(res)
     
     # and requests
-    response, data = api.users_via_apikey_auth.get()
-    eq_(data['objects'][0]['username'], 'admin')
+    response = api.users_via_apikey_auth.get()
+    eq_(response.data['objects'][0]['username'], 'admin')
     
-    response, data = api.projects.get(params=dict(label__startswith='Test Project'))
-    ok_(data['objects'][0]['label'].startswith('Test Project'))
+    response = api.projects.get(params=dict(label__startswith='Test Project'))
+    ok_(response.data['objects'][0]['label'].startswith('Test Project'))
 
 def test_tastypieapi_via_basic_auth():
     api = drest.api.TastyPieAPI(MOCKAPI, auth_mech='basic')
@@ -98,8 +106,8 @@ def test_tastypieapi_via_basic_auth():
     ok_(res)
     
     # and requests
-    response, data = api.users_via_basic_auth.get()
-    eq_(data['objects'][0]['username'], 'admin')
+    response = api.users_via_basic_auth.get()
+    eq_(response.data['objects'][0]['username'], 'admin')
 
 @raises(drest.exc.dRestAPIError)
 def test_tastypieapi_via_unknown_auth():

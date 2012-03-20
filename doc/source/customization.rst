@@ -37,7 +37,7 @@ b) what functionality you need to maintain.
         class Meta:
             serialization = MySerializationHandler
         
-        def handle_response(self, response, content):
+        def handle_response(self, response):
             # do something to handle every response
             pass
     

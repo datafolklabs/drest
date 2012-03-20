@@ -54,13 +54,13 @@ however the following is common practice in development:
 .. code-block:: python
 
     try:
-        response, data = api.my_resource.get()
+        response = api.my_resource.get()
     except drest.exc.dRestRequestError as e:
-        print e.response
-        print e.content
+        print e.response.status
+        print e.response.data
 
 The above gives you the response object, as well as the content (data)... this
 is useful because the exception is triggered in drest code and not your own 
-(therefore bringing response, content back down the stack where you can 
+(therefore bringing the response object back down the stack where you can 
 use it).
 

@@ -108,14 +108,14 @@ class RESTResourceHandler(ResourceHandler):
             path = '/%s' % self.path
             
         try:
-            response, content = self.api.make_request('GET', path, 
+            response = self.api.make_request('GET', path, 
                                              params=self.filter(params))
         except exc.dRestRequestError as e:
             msg = "%s (resource: %s, id: %s)" % (e.msg, self.name, 
                                                  resource_id)
-            raise exc.dRestRequestError(msg, e.response, e.content)
+            raise exc.dRestRequestError(msg, e.response)
                                         
-        return response, content
+        return response
     
     def create(self, params={}):
         """A synonym for self.post()."""
@@ -135,12 +135,12 @@ class RESTResourceHandler(ResourceHandler):
         path = '/%s' % self.path
         
         try:
-            response, content = self.api.make_request('POST', path, self.filter(params))
+            response = self.api.make_request('POST', path, self.filter(params))
         except exc.dRestRequestError as e:
             msg = "%s (resource: %s)" % (e.msg, self.name)
-            raise exc.dRestRequestError(msg, e.response, e.content)
+            raise exc.dRestRequestError(msg, e.response)
             
-        return response, content
+        return response
         
     def update(self, resource_id, params={}):
         """A synonym for self.put()."""
@@ -164,13 +164,13 @@ class RESTResourceHandler(ResourceHandler):
         path = '/%s/%s' % (self.path, resource_id)
         
         try:
-            response, content = self.api.make_request('PUT', path, params)
+            response = self.api.make_request('PUT', path, params)
         except exc.dRestRequestError as e:
             msg = "%s (resource: %s, id: %s)" % (e.msg, self.name, 
                                                  resource_id)
-            raise exc.dRestRequestError(msg, e.response, e.content)
+            raise exc.dRestRequestError(msg, e.response)
             
-        return response, content
+        return response
         
     def delete(self, resource_id, params={}):
         """
@@ -192,13 +192,13 @@ class RESTResourceHandler(ResourceHandler):
         """
         path = '/%s/%s' % (self.path, resource_id)
         try:
-            response, content = self.api.make_request('DELETE', path, params)
+            response = self.api.make_request('DELETE', path, params)
         except exc.dRestRequestError as e:
             msg = "%s (resource: %s, id: %s)" % (e.msg, self.name, 
                                                  resource_id)
-            raise exc.dRestRequestError(msg, e.response, e.content)
+            raise exc.dRestRequestError(msg, e.response)
             
-        return response, content
+        return response
 
 class TastyPieResourceHandler(RESTResourceHandler):
     """
@@ -237,7 +237,7 @@ class TastyPieResourceHandler(RESTResourceHandler):
             import drest
             api = drest.api.TastyPieAPI('http://localhost:8000/api/v0/')
             api.auth(user='john.doe', api_key='34547a497326dde80bcaf8bcee43e3d1b5f24cc9')
-            response, data = api.users.get_by_uri('/api/v1/users/234/')
+            response = api.users.get_by_uri('/api/v1/users/234/')
             
         """
         resource_uri = resource_uri.rstrip('/')
@@ -251,7 +251,7 @@ class TastyPieResourceHandler(RESTResourceHandler):
         
         """
         if not self._meta.schema:
-            response, data = self.api.make_request('GET', '%s/schema' % self.path)
-            self._meta.schema = data
+            response = self.api.make_request('GET', '%s/schema' % self.path)
+            self._meta.schema = response.data
             
         return self._meta.schema

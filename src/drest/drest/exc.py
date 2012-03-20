@@ -21,10 +21,9 @@ class dRestInterfaceError(dRestError):
         
 class dRestRequestError(dRestError):
     """dRest Request Errors."""
-    def __init__(self, msg, response, content):
+    def __init__(self, msg, response):
         super(dRestRequestError, self).__init__(msg)
         self.response = response
-        self.content = content
     
     def __repr__(self):
         return "dRestRequestError: %s" % self.msg

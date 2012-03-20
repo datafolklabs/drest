@@ -38,7 +38,7 @@ Requests can be made openly by specifying the method
 .. code-block:: python
 
     # GET http://localhost:8000/api/v1/users/1/
-    response, data = api.make_request('GET', '/users/1/')
+    response = api.make_request('GET', '/users/1/')
 
 Additionally, you can add a resource which makes access to the API more 
 native and programatic.
@@ -51,10 +51,10 @@ native and programatic.
     api.resources
     
     # GET http://localhost:8000/api/v1/users/
-    response, data = api.users.get()
+    response = api.users.get()
     
     # GET http://localhost:8000/api/v1/users/1/
-    response, data = api.users.get(1)
+    response = api.users.get(1)
 
 
 Creating a resource only requires a dictionary of 'parameters' passed to the
@@ -70,20 +70,20 @@ resource:
         )
     
     # POST http://localhost:8000/api/v1/users/
-    response, data = api.users.post(user_data)
+    response = api.users.post(user_data)
 
 Updating a resource is as easy as requesting data for it, modifying it, and
 sending it back
 
 .. code-block:: python
 
-    response, data = api.users.get(1)
-    updated_data = data.copy()
+    response = api.users.get(1)
+    updated_data = response.data.copy()
     updated_data['first_name'] = 'John'
     updated_data['last_name'] = 'Doe'
     
     # PUT http://localhost:8000/api/v1/users/1/
-    response, data = api.users.put(data['id'], updated_data)
+    response = api.users.put(data['id'], updated_data)
     
     
 Deleting a resource simply requires the primary key:
@@ -91,59 +91,50 @@ Deleting a resource simply requires the primary key:
 .. code-block:: python
 
     # DELETE http://localhost:8000/api/v1/users/1/
-    response, data = api.users.delete(1)    
+    response = api.users.delete(1)    
 
     
 Working With Return Data
 ------------------------
 
-Every call to an API returns a tuple in the form of:
+Every call to an API by default returns a drest.response.ResponseHandler
+object.  The two most useful members of this object are:
 
-.. code-block:: python
+    response.status (http status code)
+    response.data (the data returned by the api)
 
-    (response, return_data)
+
+If a serialization handler is used, then response.data will be the 
+unserialized form (Python dict).
 
 The Response Object
 ^^^^^^^^^^^^^^^^^^^
 
-The first item returned from a request is an `httplib2.Response <http://bitworking.org/projects/httplib2/doc/html/libhttplib2.html#httplib2.Response>`_ 
-object that contains response data. It can can also be accessed as a 
-dictionary:
-
 .. code-block:: python
 
-    response, data = api.users.get()
+    response = api.users.get()
+    response.status # 200
+    response.data # dict
     
-    # The contents of the response object:
-    {
-        'status': '200', 
-        'content-location': u'http://localhost:8000/api/v1/users/', 
-        'vary': 'Cookie', 
-        'server': 'WSGIServer/0.1 Python/2.7.2', 
-        'date': 'Tue, 31 Jan 2012 20:41:47 GMT', 
-        'content-type': 'application/json; charset=utf-8',
-    }
     
 Developers can base conditions on the status of the response (or other
 fields):
 
 .. code-block:: python
 
-    response, data = api.users.get()
+    response = api.users.get()
     if int(response.status) != 200:
         print 'Uhoh.... we didn't get a good response.'
 
 
-The Return Data
-^^^^^^^^^^^^^^^
+The datareturned from a request is the data returned by the API.  This is 
+generally JSON, YAML, XML, etc... however if a Serialization handler is 
+enabled, this will be a python dictionary.  See :mod:`drest.serialization`.
 
-The second item returned from a request is the data, or content, returned by
-the API.  This is generally JSON, YAML, XML, etc... however if a Serialization
-handler is enabled, this will be a python dictionary.  
-See :mod:`drest.serialization`.
-
+response.data:
+    
 .. code-block:: python
-
+    
     {
         u'meta': 
             {

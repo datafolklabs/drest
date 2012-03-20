@@ -123,11 +123,16 @@ class IRequest(interface.Interface):
                 
         """
     
-    def handle_response(response, content):
+    def handle_response(response_object):
         """
         Called after the request is made.  This is a convenient place for
         developers to handle what happens during every request per their
         application needs.
+        
+        Required Arguments:
+            
+            response_object
+                The response object created by the request.
                 
         """
         
@@ -330,10 +335,7 @@ class RequestHandler(meta.MetaMixin):
                 raise exc.dRestAPIError(e.args[1])
             
     def _get_complete_url(self, method, url, params):
-        if self._meta.trailing_slash:
-            url = "%s/" % url.strip('/')  
-        else:
-            url = url.strip('/')
+        url = "%s%s" % (url.strip('/'), '/' if self._meta.trailing_slash else '')
         
         if method == 'GET':
             url_params = dict(self._extra_url_params, **params)
@@ -379,48 +381,47 @@ class RequestHandler(meta.MetaMixin):
 
         if self._meta.serialize: 
             payload = self._serialize(params)
-            response, content = self._make_request(url, method, payload,
-                                                   headers=headers)
         else:
             payload = urlencode(params)
-            response, content = self._make_request(url, method, payload,
-                                                   headers=headers)
-            response.unserialized_content = content
-
+            
+        res, data = self._make_request(url, method, payload,
+                                          headers=headers)
+        unserialized_data = data
+        serialized_data = None
         if self._meta.deserialize:
-            response.serialized_content = content
-            content = self._deserialize(content)
+            serialized_data = data
+            data = self._deserialize(data)
 
-        response.method = method
-        response.payload = payload
-        response.url = url
-
-        self.handle_response(response, content)
-        return response, content
+        return_response = response.ResponseHandler(int(res.status), data,
+            method=method,
+            payload=payload,
+            url=url,
+            http_response=res,
+            serialized_data=serialized_data,
+            unserialized_data=unserialized_data,
+            )
+        
+        return self.handle_response(return_response)
     
-    def handle_response(self, response, content):
+    def handle_response(self, response_object):
         """
         A simple wrapper to handle the response.  By default raises 
         exc.dRestRequestError if the response code is within 400-499, or 500.
+        Must return the original, or modified, response object.
         
         Required Arguments:
         
-            response
-                The response object.
-                
-            content
-                The response content.
+            response_object
+                The response object created by the request.
                 
         """
+        response = response_object
         if (400 <= response.status <=499) or (response.status == 500):
             msg = "Received HTTP Code %s - %s" % (
                    response.status, 
                    httplib.responses[int(response.status)])
-            raise exc.dRestRequestError(
-                msg, response=response, content=content
-                )
-
-        return (response, content)
+            raise exc.dRestRequestError(msg, response=response)
+        return response
 
 class TastyPieRequestHandler(RequestHandler):
     """
@@ -433,7 +434,7 @@ class TastyPieRequestHandler(RequestHandler):
     class Meta:
         serialize = True
         deserialize = True
-        serialization = serialization.JsonSerializationHandler
+        serialization_handlerf  = serialization.JsonSerializationHandler
         
     def __init__(self, **kw):
         super(TastyPieRequestHandler, self).__init__(**kw)

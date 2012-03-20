@@ -95,12 +95,11 @@ class API(meta.MetaMixin):
                 request_handler = MyCustomRequestHandler
         api = MyAPI()
     
-        # By default, auth() just appends its params to the URL so name the
-        # parameters however you want them passed as.
-        api.auth(api_user='john.doe', password='XXXXXXXXXXXX')
+        # By default, the API support HTTP Basic Auth with username/password.
+        api.auth('john.doe', 'password')
     
         # Make calls openly
-        response, data = api.make_request('GET', '/users/1/')
+        response = api.make_request('GET', '/users/1/')
     
         # Or attach a resource
         api.add_resource('users')
@@ -109,18 +108,18 @@ class API(meta.MetaMixin):
         api.resources
     
         # Get all objects of a resource
-        response, objects = api.users.get()
+        response = api.users.get()
     
         # Get a single resource with primary key '1'
-        response, object = api.users.get(1)
+        response = api.users.get(1)
     
         # Update a resource with primary key '1'
-        response, data = api.users.get(1)
-        updated_data = data.copy()
+        response = api.users.get(1)
+        updated_data = response.data.copy()
         updated_data['first_name'] = 'John'
         updated_data['last_name'] = 'Doe'
     
-        response, object = api.users.update(data['id'], updated_data)
+        response = api.users.put(data['id'], updated_data)
     
         # Create a resource
         user_data = dict(
@@ -129,10 +128,10 @@ class API(meta.MetaMixin):
             first_name='John',
             last_name'Doe',
             )
-        response, data = api.users.create(user_data)
+        response = api.users.post(user_data)
     
         # Delete a resource with primary key '1'
-        response, data = api.users.delete(1)
+        response = api.users.delete(1)
         
     """
     class Meta:
@@ -151,9 +150,20 @@ class API(meta.MetaMixin):
         self.baseurl = self._meta.baseurl.strip('/')
         self._resources = []
 
+        self._setup_request_handler(**kw)
+        
+    def _setup_request_handler(self, **kw):
         request.validate(self._meta.request_handler)
         self.request = self._meta.request_handler(**kw)
-                            
+
+        # just makes things easier to be able to wrap meta under the api
+        # and pass it to the request handler.
+        for meta in dir(self._meta):
+            if meta.startswith('_'):
+                continue
+            if hasattr(self.request._meta, meta):
+                setattr(self.request._meta, meta, getattr(self._meta, meta))
+                
         for key in self._meta.extra_headers:
             self.request.add_header(key, self._meta.extra_headers[key])
         
@@ -342,8 +352,8 @@ class TastyPieAPI(API):
         Find available resources, and add them via add_resource().
         
         """
-        response, data = self.make_request('GET', '/')
-        for resource in list(data.keys()):
+        response = self.make_request('GET', '/')
+        for resource in list(response.data.keys()):
             if resource not in self._resources:
                 self.add_resource(resource)
     
