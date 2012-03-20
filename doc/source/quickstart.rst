@@ -83,7 +83,7 @@ sending it back
     updated_data['last_name'] = 'Doe'
     
     # PUT http://localhost:8000/api/v1/users/1/
-    response = api.users.put(data['id'], updated_data)
+    response = api.users.put(1, updated_data)
     
     
 Deleting a resource simply requires the primary key:
@@ -100,8 +100,8 @@ Working With Return Data
 Every call to an API by default returns a drest.response.ResponseHandler
 object.  The two most useful members of this object are:
 
-    response.status (http status code)
-    response.data (the data returned by the api)
+    * response.status (http status code)
+    * response.data (the data returned by the api)
 
 
 If a serialization handler is used, then response.data will be the 
