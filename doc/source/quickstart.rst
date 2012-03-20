@@ -123,11 +123,11 @@ fields):
 .. code-block:: python
 
     response = api.users.get()
-    if int(response.status) != 200:
+    if response.status != 200:
         print 'Uhoh.... we didn't get a good response.'
 
 
-The datareturned from a request is the data returned by the API.  This is 
+The data returned from a request is the data returned by the API.  This is 
 generally JSON, YAML, XML, etc... however if a Serialization handler is 
 enabled, this will be a python dictionary.  See :mod:`drest.serialization`.
 
