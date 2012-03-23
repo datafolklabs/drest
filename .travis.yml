@@ -1,5 +1,5 @@
 language: python
-before_script: src/drest.mockapi/mockapi/manage.py testserver DREST_MOCKAPI_PROCESS
+before_script: python src/drest.mockapi/mockapi/manage.py testserver DREST_MOCKAPI_PROCESS &
 script: ./utils/run_tests.sh --without-mockapi
 after_script: /bin/ps auxw | /usr/bin/grep 'DREST_MOCKAPI_PROCESS' | /usr/bin/awk {' print $2 '} | /usr/bin/xargs kill
 install: 
