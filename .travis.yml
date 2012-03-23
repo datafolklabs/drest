@@ -1,5 +1,13 @@
-script: ./utils/run_tests.sh  
+before_script: src/drest.mockapi/mockapi/manage.py testserver DREST_MOCKAPI_PROCESS
+script: ./utils/run_tests.sh --without-mockapi
+after_script: /bin/ps auxw | /usr/bin/grep 'DREST_MOCKAPI_PROCESS' | /usr/bin/awk {' print $2 '} | /usr/bin/xargs kill
+install: 
+  - pip install -r src/drest/requirements.txt --use-mirrors
+  - pip install -r src/drest.mockapi/requirements.txt --use-mirrors
 python:
+  - "2.5"
   - "2.6"
   - "2.7"
+  - "3.0"
+  - "3.1"
   - "3.2"
