@@ -3,7 +3,6 @@ before_script: ./utils/travis/bootstrap.sh
 script: ./utils/run_tests.sh --without-mockapi
 install: 
   - pip install -r src/drest/requirements.txt --use-mirrors
-  - pip install simplejson --use-mirrors ; exit 0
 python:
   - "2.5"
   - "2.6"
