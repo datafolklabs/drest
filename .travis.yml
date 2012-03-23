@@ -1,1 +1,5 @@
 script: ./utils/run_tests.sh  
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"

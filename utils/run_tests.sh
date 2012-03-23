@@ -5,6 +5,8 @@ SOURCES="src/drest/"
 if [ -z "$VIRTUAL_ENV" ]; then
     echo "Not running in a virtualenv???  You've got 10 seconds to CTRL-C ..."
     sleep 10
+    virtualenv .env/
+    source .env/bin/activate
 fi
 
 pip install nose coverage
