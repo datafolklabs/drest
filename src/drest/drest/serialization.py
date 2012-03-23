@@ -83,9 +83,9 @@ class JsonSerializationHandler(SerializationHandler):
     """
     def __init__(self, **kw):
         try:
-            import json
-        except ImportError as e:
-            import simplejson as json
+            import json # pragma: no cover
+        except ImportError as e: # pragma: no cover
+            import simplejson as json # pragma: no cover
             
         self.backend = json
         super(JsonSerializationHandler, self).__init__(**kw)
