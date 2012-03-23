@@ -28,3 +28,4 @@ pip-log.txt
 doc/build/*
 coverage_html_report/
 test.py
+.idea/

@@ -70,6 +70,16 @@ def test_add_resource():
 def test_duplicate_resource():
     api.add_resource('users')
 
+@raises(drest.exc.dRestResourceError)
+def test_bad_resource_name():
+    api.add_resource('some!bogus-name')
+
+def test_nested_resource_name():
+    api.add_resource('nested.users.resource', path='/users/')
+    eq_(api.nested.__class__, drest.resource.NestedResource)
+    eq_(api.nested.users.__class__, drest.resource.NestedResource)
+    eq_(api.nested.users.resource.__class__, drest.resource.RESTResourceHandler)
+    
 def test_tastypieapi_via_apikey_auth():
     api = drest.api.TastyPieAPI(MOCKAPI)
     api.auth(user='john.doe', api_key='JOHN_DOE_API_KEY')

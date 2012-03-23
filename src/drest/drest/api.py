@@ -1,5 +1,6 @@
 """dRest core API connection library."""
 
+import re
 from drest import interface, resource, request, serialization, meta, exc
 from drest import response
 
@@ -78,61 +79,60 @@ class API(meta.MetaMixin):
 
         # Create a generic client api object
         api = drest.API('http://localhost:8000/api/v1/')
-        
+
         # Or something more customized:
         api = drest.API(
             baseurl='http://localhost:8000/api/v1/',
             trailing_slash=False,
             ignore_ssl_validation=True,
             )
-        
+
         # Or even more so:
         class MyAPI(drest.API):
             class Meta:
                 baseurl = 'http://localhost:8000/api/v1/'
-                extra_headers = dict('MyKey', 'Some Value For Key')
-                extra_params = dict('some_param', 'some_value')
+                extra_headers = dict(MyKey='Some Value For Key')
+                extra_params = dict(some_param='some_value')
                 request_handler = MyCustomRequestHandler
         api = MyAPI()
-    
+
         # By default, the API support HTTP Basic Auth with username/password.
         api.auth('john.doe', 'password')
-    
+
         # Make calls openly
         response = api.make_request('GET', '/users/1/')
-    
+
         # Or attach a resource
         api.add_resource('users')
-    
+
         # Get available resources
         api.resources
-    
+
         # Get all objects of a resource
         response = api.users.get()
-    
+
         # Get a single resource with primary key '1'
         response = api.users.get(1)
-    
+
         # Update a resource with primary key '1'
         response = api.users.get(1)
         updated_data = response.data.copy()
         updated_data['first_name'] = 'John'
         updated_data['last_name'] = 'Doe'
-    
+
         response = api.users.put(data['id'], updated_data)
-    
+
         # Create a resource
         user_data = dict(
             username='john.doe',
-            password'oober-secure-password',
+            password='oober-secure-password',
             first_name='John',
-            last_name'Doe',
+            last_name='Doe',
             )
         response = api.users.post(user_data)
-    
+
         # Delete a resource with primary key '1'
         response = api.users.delete(1)
-        
     """
     class Meta:
         baseurl = None
@@ -197,6 +197,56 @@ class API(meta.MetaMixin):
         return self._resources
         
     def add_resource(self, name, resource_handler=None, path=None):
+        """
+        Add a resource handler to the api object.
+        
+        Required Arguments:
+        
+            name
+                The name of the resource.  This is generally the basic name 
+                of the resource on the API.  For example '/api/v0/users/' 
+                would likely be called 'users' and will be accessible as
+                'api.users' from which additional calls can be made.  For 
+                example 'api.users.get()'.  
+        
+        Optional Arguments:
+        
+            resource_handler
+                The resource handler class to use.  Defaults to 
+                self._meta.resource_handler.
+            
+            path
+                The path to the resource on the API (after the base url).
+                Defaults to '/<name>/'.
+        
+        
+        Nested Resources:
+            
+        It is possible to attach resources in a 'nested' fashion.  For example
+        passing a name of 'my.nested.users' would be accessible as 
+        api.my.nested.users.get().
+        
+        Usage:
+        
+        .. code-block:: python
+        
+            api.add_resource('users')
+            response = api.users.get()
+            
+            # Or for nested resources
+            api.add_resource('my.nested.users', path='/users/')
+            response = api.my.nested.users.get()
+            
+        """
+        safe_list = ['.', '_']
+        for char in name:
+            if char in safe_list:
+                continue
+            if not char.isalnum():
+                raise exc.dRestResourceError(
+                    "resource name must be alpha-numeric."
+                    )
+        
         if not path:
             path = '%s' % name
         else:
@@ -210,7 +260,29 @@ class API(meta.MetaMixin):
         if hasattr(self, name):
             raise exc.dRestResourceError(
                 "The object '%s' already exist on '%s'" % (name, self))
-        setattr(self, name, handler)
+                    
+        
+        # break up if nested
+        parts = name.split('.')
+        if len(parts) == 1:
+            setattr(self, name, handler)
+        elif len(parts) > 1:
+            first = parts.pop(0)
+            last = parts.pop()
+            
+            # add the first object to self
+            setattr(self, first, resource.NestedResource())
+            first_obj = getattr(self, first)
+            current_obj = first_obj
+            
+            # everything in between
+            for part in parts:
+                setattr(current_obj, part, resource.NestedResource())
+                current_obj = getattr(current_obj, part)
+            
+            # add the actual resource to the chain of nested objects
+            setattr(current_obj, last, handler)        
+            
         self._resources.append(name)
         
 class TastyPieAPI(API):

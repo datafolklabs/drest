@@ -28,7 +28,6 @@ class IResource(interface.Interface):
             
     """
     
-        
 class ResourceHandler(meta.MetaMixin):
     """
     This class acts as a base class that other resource handler should
@@ -255,3 +254,6 @@ class TastyPieResourceHandler(RESTResourceHandler):
             self._meta.schema = response.data
             
         return self._meta.schema
+
+class NestedResource(object):
+    pass

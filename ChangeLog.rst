@@ -26,6 +26,7 @@ Bug Fixes:
  
 Feature Enhancements:
 
+    - :issue:`4` - Better support for nested resource names.
     - :issue:`5`, :issue:`8` - Request object is now exposed publicly.
     - :issue:`6` - Add capability to suppress final forward-slash
     - :issue:`7` - Cache http object for improved performance.

@@ -45,6 +45,7 @@ native and programatic.
 
 .. code-block:: python
 
+    # Add a basic resource (assumes path='/users/')
     api.add_resource('users')
     
     # A list of available resources is available at:
