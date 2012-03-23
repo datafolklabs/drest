@@ -8,6 +8,7 @@ API Reference:
     * :mod:`drest.api`
     * :mod:`drest.resource`
     * :mod:`drest.request`
+    * :mod:`drest.response`
     * :mod:`drest.serialization`
 
 Example
