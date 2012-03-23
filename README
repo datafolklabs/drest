@@ -27,7 +27,7 @@ USAGE:
     
     # Make calls openly via any HTTP Method, and any path
     # GET http://localhost:8000/api/v1/users/1/
-    response, data = api.make_request('GET', '/users/1/')
+    response = api.make_request('GET', '/users/1/')
     
     # Or attach a resource
     api.add_resource('users')
@@ -38,35 +38,35 @@ USAGE:
     
     # Get all objects of a resource
     # GET http://localhost:8000/api/v1/users/
-    response, data = api.users.get()
+    response = api.users.get()
     
     # Get a single resource with primary key '1'
     # GET http://localhost:8000/api/v1/users/1/
-    response, data = api.users.get(1)
+    response = api.users.get(1)
 
     # Create a resource data dictionary
     user_data = dict(
                     username='john.doe',
-                    password'oober-secure-password',
+                    password='oober-secure-password',
                     first_name='John',
-                    last_name'Doe',
+                    last_name='Doe',
                     )
     
     # POST http://localhost:8000/api/v1/users/
-    response, data = api.users.post(user_data)
+    response = api.users.post(user_data)
     
     # Update a resource with primary key '1'
-    response, data = api.users.get(1)
+    response = api.users.get(1)
     updated_data = data.copy()
     updated_data['first_name'] = 'John'
     updated_data['last_name'] = 'Doe'
     
     # PUT http://localhost:8000/api/v1/users/1/
-    response, data = api.users.put(1, updated_data)
+    response = api.users.put(1, updated_data)
     
     # Delete a resource with primary key '1'
     # DELETE http://localhost:8000/api/v1/users/1/
-    response, data = api.users.delete(1)
+    response = api.users.delete(1)
     
     
 LICENSE:
