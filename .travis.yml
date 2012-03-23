@@ -1,7 +1,6 @@
 language: python
 before_script: python src/drest.mockapi/mockapi/manage.py testserver DREST_MOCKAPI_PROCESS &
 script: ./utils/run_tests.sh --without-mockapi
-after_script: ps auxw | grep 'DREST_MOCKAPI_PROCESS' | awk {' print $2 '} | xargs kill
 install: 
   - pip install -r src/drest/requirements.txt --use-mirrors
   - pip install -r src/drest.mockapi/requirements.txt --use-mirrors
