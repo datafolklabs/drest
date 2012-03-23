@@ -16,7 +16,7 @@ Key Features:
     * Only one external dependency on httplib2
     * Key pieces of the library are customizable by defined handlers
     * Interface definitions ensure handlers are properly implemented
-    * Support for Python 2.6+ and Python 3+
+    * Tested against all major versions of Python versions 2.6 through 3.2
     * 100% test coverage
     
 Additional Links:

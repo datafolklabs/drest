@@ -4,7 +4,6 @@ script: ./utils/run_tests.sh --without-mockapi
 install: 
   - pip install -r src/drest/requirements.txt --use-mirrors
 python:
-  - "2.5"
   - "2.6"
   - "2.7"
   - "3.0"
