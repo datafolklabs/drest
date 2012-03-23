@@ -82,7 +82,11 @@ class JsonSerializationHandler(SerializationHandler):
     
     """
     def __init__(self, **kw):
-        import json
+        try:
+            import json
+        except ImportError as e:
+            import simplejson as json
+            
         self.backend = json
         super(JsonSerializationHandler, self).__init__(**kw)
         

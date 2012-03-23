@@ -1,7 +1,6 @@
 """Tests for drest.resource."""
 
 import os
-import json
 from random import random
 from nose.tools import eq_, ok_, raises
 

@@ -1,7 +1,12 @@
 """Tests for drest.serialization."""
 
 import os
-import json
+
+try:
+    import json
+except ImportError as e:
+    import simplejson as json
+    
 from nose.tools import eq_, raises
 import drest
 

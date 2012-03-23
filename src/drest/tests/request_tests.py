@@ -1,10 +1,14 @@
 """Tests for drest.request."""
 
 import os
-import json
 from random import random
 from nose.tools import eq_, raises
 
+try:
+    import json
+except ImportError as e:
+    import simplejson as json
+        
 import drest
 from drest.testing import MOCKAPI
 
