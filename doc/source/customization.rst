@@ -33,17 +33,23 @@ b) what functionality you need to maintain.
             # do something to deserialize data
             pass
     
+    class MyResponseHandler(drest.response.ResponseHandler)
+        def __init__(self, status, data, **kw):
+            super(MyResponseHandler, self).__init__(status, data, **kw)
+            # do something to customize the response handler        
+            
     class MyRequestHandler(drest.request.RequestHandler):
         class Meta:
-            serialization = MySerializationHandler
-        
+            serialization_handler = MySerializationHandler
+            response_handler = MyResponseHandler
+            
         def handle_response(self, response):
-            # do something to handle every response
+            # do something to wrape every response
             pass
     
     class MyResourceHandler(drest.resource.ResourceHandler):
         class Meta:
-            request = MyRequestHandler
+            request_handler = MyRequestHandler
     
         def some_custom_function(self, params={}):
             # do some kind of custom api call
@@ -52,8 +58,8 @@ b) what functionality you need to maintain.
     class MyAPI(drest.api.API):
         class Meta:
             baseurl = 'http://example.com/api/v1/'
-            resource = MyResourceHandler
-            request = MyRequestHandler
+            resource_handler = MyResourceHandler
+            request_handler = MyRequestHandler
         
         def auth(self, *args, **kw):
             # do something to customize authentication
