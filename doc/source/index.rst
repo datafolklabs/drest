@@ -9,6 +9,9 @@ dRest Documentation
 dRest is a configurable HTTP/REST client library for Python.  It's goal is to 
 make the creation of API clients dead simple, without lacking features.
 
+.. image:: https://secure.travis-ci.org/derks/drest.png
+  :target: http://travis-ci.org/#!/derks/drest
+  
 Key Features:
 
     * Light-weight API Client Library, implementing REST by default
