@@ -343,7 +343,7 @@ class RequestHandler(meta.MetaMixin):
             url_params = self._extra_url_params
             
         if url_params:
-            url = "%s?%s" % (url, urlencode(self._extra_url_params))
+            url = "%s?%s" % (url, urlencode(url_params))
             
         return url
         

@@ -100,7 +100,6 @@ class RESTResourceHandler(ResourceHandler):
                 Additional request parameters to pass along.
                 
         """
-
         if resource_id:
             path = '/%s/%s' % (self.path, resource_id)
         else:

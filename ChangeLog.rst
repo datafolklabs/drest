@@ -21,7 +21,7 @@ is available online at:
 
 Bug Fixes:
 
-    None
+    * :issue:`12` - Params are not added correctly to GET request
     
 Feature Enhancements:
 
