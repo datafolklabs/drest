@@ -4,7 +4,9 @@ from drest import interface, exc, meta, request
 
 def validate(obj):
     """Validates a handler implementation against the IResource interface."""
-    members = []
+    members = [
+        'filter',
+        ]
     metas = [
         'baseurl',
         'resource',
@@ -43,6 +45,18 @@ class ResourceHandler(meta.MetaMixin):
         self.path = path
         self.name = name
         
+    def filter(self, params):
+        """
+        Give the ability to alter params before sending the request.
+        
+        Required Arguments:
+        
+            params
+                The list of params that will be passed to the endpoint.
+                
+        """
+        return params
+        
 class RESTResourceHandler(ResourceHandler):
     """
     This class implements the IResource interface, specifically for 
@@ -74,18 +88,6 @@ class RESTResourceHandler(ResourceHandler):
     """
     def __init__(self, api_obj, name, path, **kw):
         super(RESTResourceHandler, self).__init__(api_obj, name, path, **kw)
-                
-    def filter(self, params):
-        """
-        Give the ability to alter params before sending the request.
-        
-        Required Arguments:
-        
-            params
-                The list of params that will be passed to the endpoint.
-                
-        """
-        return params
 
     def get(self, resource_id=None, params={}):
         """
