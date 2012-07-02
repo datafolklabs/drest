@@ -126,7 +126,7 @@ fields):
 
     response = api.users.get()
     if response.status != 200:
-        print 'Uhoh.... we didn't get a good response.'
+        print "Uhoh.... we didn't get a good response."
 
 
 The data returned from a request is the data returned by the API.  This is 
