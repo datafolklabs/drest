@@ -384,21 +384,16 @@ class RequestHandler(meta.MetaMixin):
         else:
             payload = urlencode(params)
             
-        res, data = self._make_request(url, method, payload,
-                                          headers=headers)
+        res_headers, data = self._make_request(url, method, payload,
+                                               headers=headers)
         unserialized_data = data
         serialized_data = None
         if self._meta.deserialize:
             serialized_data = data
             data = self._deserialize(data)
 
-        return_response = response.ResponseHandler(int(res.status), data,
-            method=method,
-            payload=payload,
-            url=url,
-            http_response=res,
-            serialized_data=serialized_data,
-            unserialized_data=unserialized_data,
+        return_response = response.ResponseHandler(
+            int(res_headers['status']), data, res_headers,
             )
         
         return self.handle_response(return_response)

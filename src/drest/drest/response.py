@@ -24,14 +24,19 @@ class IResponse(interface.Interface):
     Implementations do *not* subclass from interfaces.
             
     """
-
+    status = interface.Attribute('The response status (i.e. HTTP code).')
+    data = interface.Attribute('The data returned by the request.')
+    headers = interface.Attribute('The headers returned by the request.')
+    
 class ResponseHandler(meta.MetaMixin):
     class Meta:
         pass
     
     status = None
     data = None
+    headers = None
     
-    def __init__(self, status, data, **kw):
+    def __init__(self, status, data, headers):
         self.status = int(status)
         self.data = data
+        self.headers = headers

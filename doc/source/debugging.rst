@@ -58,6 +58,7 @@ however the following is common practice in development:
     except drest.exc.dRestRequestError as e:
         print e.response.status
         print e.response.data
+        print e.response.headers
 
 The above gives you the response object, as well as the content (data)... this
 is useful because the exception is triggered in drest code and not your own 

@@ -103,7 +103,7 @@ object.  The two most useful members of this object are:
 
     * response.status (http status code)
     * response.data (the data returned by the api)
-
+    * response.headers (the headers dictionary returned by the request)
 
 If a serialization handler is used, then response.data will be the 
 unserialized form (Python dict).
@@ -116,6 +116,7 @@ The Response Object
     response = api.users.get()
     response.status # 200
     response.data # dict
+    response.headers # dict
     
     
 Developers can base conditions on the status of the response (or other

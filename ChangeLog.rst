@@ -25,7 +25,7 @@ Bug Fixes:
     
 Feature Enhancements:
 
-    None
+    * :issue:`15` - dRestResponse object should include response headers
     
 
 0.9.6 - Mar 23, 2012 
