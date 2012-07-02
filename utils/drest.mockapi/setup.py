@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-VERSION = '0.9.8'
+VERSION = '0.9.9'
 
 setup(name='drest.mockapi',
     version=VERSION,

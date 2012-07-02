@@ -14,7 +14,7 @@
 import sys, os
 
 VERSION = '0.9'
-RELEASE = '0.9.8'
+RELEASE = '0.9.9'
 
 sys.path.insert(0, os.path.abspath('../../src/drest/'))
 

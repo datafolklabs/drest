@@ -31,7 +31,6 @@ tmpdir=$(mktemp -d -t drest-$version)
 mkdir ${dir}
 mkdir ${dir}/doc
 mkdir ${dir}/sources
-mkdir ${dir}/pypi
 
 # all
 git archive ${version} --prefix=drest-${version}/ | gzip > ${dir}/sources/drest-${version}.tar.gz
@@ -43,4 +42,3 @@ pushd $tmpdir
         sphinx-build doc/source ${dir}/doc
     popd
 popd
-
