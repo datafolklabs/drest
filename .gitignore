@@ -26,6 +26,6 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 doc/build/*
-coverage_report/
+coverage_html/
 test.py
 .idea/

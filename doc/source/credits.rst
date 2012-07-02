@@ -1,1 +1,1 @@
-../../CREDITS.rst
+../../CREDITS

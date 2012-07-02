@@ -1,1 +1,1 @@
-../../ChangeLog.rst
+../../ChangeLog

@@ -28,7 +28,7 @@ Installing Development Version From Git
 
     (drest) $ git clone git://github.com/derks/drest.git
     
-    (drest) $ cd src/drest/
+    (drest) $ cd drest/
     
     (drest) $ python setup.py install
     
@@ -58,7 +58,7 @@ system:
 
 .. code-block:: text
 
-    (drest) $ ./utils/run_tests.sh
+    (drest) $ ./utils/run-tests.sh
     
 
 For Python 3 testing, you will need to run 'drest.mockapi' manually via a 
@@ -73,9 +73,7 @@ Terminal 1:
     
     $ source ~/env/drest-py27/bin/activate
     
-    (drest-py27) $ cd src/drest.mockapi/mockapi
-    
-    (drest-py27) $ python manage.py testserver
+    (drest-py27) $ ./utils/run-mockapi.sh
     
 
 Terminal 2:
@@ -86,4 +84,4 @@ Terminal 2:
     
     $ source ~/env/drest-py32/bin/activate
     
-    (drest-py32) $ ./utils/run_tests.sh --without-mockapi
+    (drest-py32) $ ./utils/run-tests.sh --without-mockapi

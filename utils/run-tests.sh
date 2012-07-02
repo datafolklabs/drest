@@ -14,14 +14,8 @@ python setup.py develop --no-deps
 if [ "$1" == "--without-mockapi" ]; then
     echo "Not running drest.mockapi..."
 else
-    echo "Starting drest.mockapi..."
-    pushd utils/drest.mockapi
-        pip install -r requirements.txt
-        python setup.py develop --no-deps
-        python mockapi/manage.py testserver DREST_MOCKAPI_PROCESS 2>/dev/null 1>/dev/null &
-        sleep 5
-    popd
-    
+    ./utils/run-mockapi.sh DREST_MOCKAPI_PROCESS 2>/dev/null 1>/dev/null &
+    sleep 5
 fi
 
 python setup.py nosetests
@@ -41,9 +35,4 @@ else
     | /usr/bin/xargs kill 2>/dev/null 1>/dev/null
 fi
 
-echo; echo
-#coverage combine
-#coverage html
-
-#coverage report
 exit $RET
