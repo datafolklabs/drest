@@ -21,27 +21,6 @@ When installing drest, ensure that your development environment is active
 by sourcing the activate script (as seen above).
 
 
-Installing Development Version From Git
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: text
-
-    (drest) $ git clone git://github.com/derks/drest.git
-    
-    (drest) $ cd drest/
-    
-    (drest) $ python setup.py install
-    
-
-To run tests, do the following from the 'root' directory:
-
-.. code-block:: text
-    
-    (drest) $ pip install nose
-    
-    (drest) $ python setup.py nosetests
-
-
 Installing Stable Versions From PyPi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -49,12 +28,19 @@ Installing Stable Versions From PyPi
 
     (drest) $ pip install drest
     
-    
-Running Unit Tests
-^^^^^^^^^^^^^^^^^^
 
-Unit tests should be run to ensure dRest is completely functional on your 
-system:
+Installing Development Version From Git
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: text
+
+    (drest) $ pip install -e git+git://github.com/derks/drest.git#egg=drest
+
+    
+Running Unit Tests in Development
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To run tests, do the following from the 'root' directory of the drest source:
 
 .. code-block:: text
 
