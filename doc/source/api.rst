@@ -41,7 +41,13 @@ API Documentation
 .. automodule:: drest.request
     :members:
 
-.. _drest.resource:
+:mod:`drest.response`
+--------------------
+
+.. automodule:: drest.response
+    :members:
+
+.. _drest.response:
 
 :mod:`drest.resource`
 ---------------------
