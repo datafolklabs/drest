@@ -6,6 +6,7 @@ def validate(obj):
     members = [
         'status',
         'data',
+        'headers',
         ]
     metas = []
     interface.validate(IResponse, obj, members, metas)
