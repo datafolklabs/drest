@@ -17,7 +17,7 @@ if [ $? != 0 ]; then
 fi
 
 # run tests
-./utils/run_tests.sh
+./utils/run-tests.sh
 
 short=$(echo $version | awk -F . {' print $1"."$2 '})
 dir=~/drest-${version}
@@ -36,13 +36,6 @@ mkdir ${dir}/pypi
 # all
 git archive ${version} --prefix=drest-${version}/ | gzip > ${dir}/sources/drest-${version}.tar.gz
 cp -a ${dir}/sources/drest-${version}.tar.gz $tmpdir/
-
-# individual
-for i in drest; do
-    pushd src/$i
-    git archive ${version} --prefix=${i}-${version}/ | gzip > ${dir}/pypi/${i}-${version}.tar.gz
-    popd
-done
 
 pushd $tmpdir
     tar -zxvf drest-${version}.tar.gz
