@@ -1,8 +1,5 @@
 language: python
-before_script: ./utils/travis/bootstrap.sh
-script: ./utils/run_tests.sh --without-mockapi
-install: 
-  - pip install -r src/drest/requirements.txt --use-mirrors
+script: ./utils/travis.sh
 python:
   - "2.6"
   - "2.7"

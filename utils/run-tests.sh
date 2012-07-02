@@ -1,7 +1,5 @@
 #!/bin/bash
 
-SOURCES="src/drest/"
-
 if [ -z "$VIRTUAL_ENV" ]; then
     echo "Not running in a virtualenv???  You've got 10 seconds to CTRL-C ..."
     sleep 10
@@ -10,30 +8,23 @@ if [ -z "$VIRTUAL_ENV" ]; then
 fi
 
 pip install nose coverage
-
-for path in $SOURCES; do
-    pushd $path
-        pip install -r requirements.txt
-        python setup.py develop --no-deps
-    popd
-done
+pip install -r requirements.txt
+python setup.py develop --no-deps
 
 if [ "$1" == "--without-mockapi" ]; then
     echo "Not running drest.mockapi..."
 else
     echo "Starting drest.mockapi..."
-    pushd src/drest.mockapi
+    pushd utils/drest.mockapi
         pip install -r requirements.txt
         python setup.py develop --no-deps
         python mockapi/manage.py testserver DREST_MOCKAPI_PROCESS 2>/dev/null 1>/dev/null &
-        sleep 10
+        sleep 5
     popd
     
 fi
 
-coverage erase
-rm -rf coverage_html_report/
-coverage run `which nosetests` --verbosity=3 $SOURCES
+python setup.py nosetests
 RET=$?
 
 # This is a hack to wait for tests to run
@@ -51,8 +42,8 @@ else
 fi
 
 echo; echo
-coverage combine
-coverage html
+#coverage combine
+#coverage html
 
-coverage report
+#coverage report
 exit $RET
