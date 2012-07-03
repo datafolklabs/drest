@@ -8,4 +8,4 @@ pip install -r requirements.txt --use-mirrors
 
 # forces python 3 builds to run the mockapi as python 2.7
 source /home/vagrant/virtualenv/python2.7/bin/activate
-./utils/run-mockapi.sh
+./utils/run-mockapi.sh DREST_MOCKAPI_PROCESS 2>/dev/null 1>/dev/null &
