@@ -1,8 +1,8 @@
 """dRest core API connection library."""
 
 import re
-from drest import interface, resource, request, serialization, meta, exc
-from drest import response
+from . import interface, resource, request, serialization, meta, exc
+from . import response
 
 class API(meta.MetaMixin):
     """

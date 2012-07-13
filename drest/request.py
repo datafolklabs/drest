@@ -15,7 +15,7 @@ else:
 import socket
 from httplib2 import Http
 
-from drest import exc, interface, meta, serialization, response
+from . import exc, interface, meta, serialization, response
 
 def validate(obj):
     """Validates a handler implementation against the IRequest interface."""

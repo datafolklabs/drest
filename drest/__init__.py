@@ -1,4 +1,3 @@
 
-from drest.api import API
-from drest.request import RequestHandler
-from drest.resource import ResourceHandler, RESTResourceHandler
+# only import api classes for convenience
+from .api import API, TastyPieAPI

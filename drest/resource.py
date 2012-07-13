@@ -1,6 +1,6 @@
 
 import re
-from drest import interface, exc, meta, request
+from . import interface, exc, meta, request
 
 def validate(obj):
     """Validates a handler implementation against the IResource interface."""

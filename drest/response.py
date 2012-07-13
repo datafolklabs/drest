@@ -1,5 +1,5 @@
 
-from drest import exc, meta, interface
+from . import exc, meta, interface
 
 def validate(obj):
     """Validates a handler implementation against the IResponse interface."""

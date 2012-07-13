@@ -54,11 +54,11 @@ response = api.users.get(1)
 
 # Create a resource data dictionary
 user_data = dict(
-                username='john.doe',
-                password='oober-secure-password',
-                first_name='John',
-                last_name='Doe',
-                )
+    username='john.doe',
+    password='oober-secure-password',
+    first_name='John',
+    last_name='Doe',
+    )
 
 # POST http://localhost:8000/api/v1/users/
 response = api.users.post(user_data)

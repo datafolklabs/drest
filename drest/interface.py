@@ -1,5 +1,5 @@
 
-from drest import exc
+from . import exc
 
 class Interface(object):
     """
