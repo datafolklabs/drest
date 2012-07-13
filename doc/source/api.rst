@@ -42,7 +42,7 @@ API Documentation
     :members:
 
 :mod:`drest.response`
---------------------
+---------------------
 
 .. automodule:: drest.response
     :members:
