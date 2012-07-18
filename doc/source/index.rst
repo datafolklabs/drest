@@ -25,10 +25,11 @@ Key Features:
 Additional Links:
 
     * RTFD: `http://drest.rtfd.org/ <http://drest.rtfd.org/>`_
-    * GITHUB: `http://github.com/derks/drest/ <http://github.com/derks/drest/>`_
+    * CODE: `http://github.com/derks/drest/ <http://github.com/derks/drest/>`_
     * PYPI: `http://pypi.python.org/pypi/drest/ <http://pypi.python.org/pypi/drest/>`_
-    * CI: `http://travis-ci.org/#!/derks/drest <http://travis-ci.org/#!/derks/drest>`_
-
+    * T-CI: `http://travis-ci.org/#!/derks/drest <http://travis-ci.org/#!/derks/drest>`_
+    * HELP: drest@librelist.org
+    
 Contents:
 
 .. toctree::
