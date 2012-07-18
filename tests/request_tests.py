@@ -36,6 +36,15 @@ class RequestTestCase(unittest.TestCase):
         except drest.exc.dRestAPIError as e:
             eq_(e.msg, 'Connection refused')
             raise
+    
+    @raises(drest.exc.dRestAPIError)
+    def test_server_not_found_error(self):
+        req = drest.request.RequestHandler()
+        try:
+            response = req.make_request('GET', 'http://bogus.example.com/api/')
+        except drest.exc.dRestAPIError as e:
+            eq_(e.msg, 'Unable to find the server at bogus.example.com')
+            raise
         
     def test_trailing_slash(self):
         req = drest.request.RequestHandler(trailing_slash=False)

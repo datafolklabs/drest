@@ -18,6 +18,8 @@ else
     sleep 5
 fi
 
+rm -rf coverage_report/
+coverage erase
 python setup.py nosetests
 RET=$?
 

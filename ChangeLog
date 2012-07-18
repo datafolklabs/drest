@@ -19,6 +19,10 @@ is available online at:
 0.9.9 - development
 ------------------------------------------------------------------------------
 
+Bugs:
+
+    * :issue:`20` - Should catch ServerNotFoundError
+    
 Feature Enhancements:
 
     * :issue:`17` - Use relative imports to make drest more portable

@@ -13,7 +13,7 @@ else:
     from urllib.request import urlopen # pragma: no cover
     
 import socket
-from httplib2 import Http
+from httplib2 import Http, ServerNotFoundError
 
 from . import exc, interface, meta, serialization, response
 
@@ -333,6 +333,9 @@ class RequestHandler(meta.MetaMixin):
                                                 headers=headers)
             except socket.error as e:
                 raise exc.dRestAPIError(e.args[1])
+        
+        except ServerNotFoundError as e:
+            raise exc.dRestAPIError(e.args[0])
             
     def _get_complete_url(self, method, url, params):
         url = "%s%s" % (url.strip('/'), '/' if self._meta.trailing_slash else '')
