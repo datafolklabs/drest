@@ -62,7 +62,7 @@ class ProjectResource(ModelResource):
         filtering = {
             'label': ALL,
             }
-        allowed_methods = ['get', 'put', 'post', 'delete']
+        allowed_methods = ['get', 'put', 'post', 'delete', 'patch']
         
 v0_api = Api(api_name='v0')
 v0_api.register(UserResource())

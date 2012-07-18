@@ -172,6 +172,32 @@ class RESTResourceHandler(ResourceHandler):
             
         return response
         
+    def patch(self, resource_id, params={}):
+        """
+        Update only specific items of an existing resource.
+        
+        Required Arguments:
+        
+            resource_id
+                The id of the resource to update.
+                
+            params
+                A dictionary of parameters (different for every resource).
+                
+        """
+                    
+        params = self.filter(params)
+        path = '/%s/%s' % (self.path, resource_id)
+        
+        try:
+            response = self.api.make_request('PATCH', path, params)
+        except exc.dRestRequestError as e:
+            msg = "%s (resource: %s, id: %s)" % (e.msg, self.name, 
+                                                 resource_id)
+            raise exc.dRestRequestError(msg, e.response)
+            
+        return response
+        
     def delete(self, resource_id, params={}):
         """
         Delete resource record.

@@ -37,4 +37,12 @@ else
     | /usr/bin/xargs kill 2>/dev/null 1>/dev/null
 fi
 
+echo
+if [ "$RET" == "0" ]; then
+    echo "TESTS PASSED OK"
+else
+    echo "TESTS FAILED"
+fi
+echo
+
 exit $RET

@@ -86,6 +86,12 @@ sending it back
     # PUT http://localhost:8000/api/v1/users/1/
     response = api.users.put(1, updated_data)
     
+Or you can simply 'PATCH' a resource:
+
+.. code-block:: python
+
+    # PATCH http://localhost:8000/api/v1/users/1/
+    response = api.users.patch(1, dict(first_name='Johnny'))
     
 Deleting a resource simply requires the primary key:
 

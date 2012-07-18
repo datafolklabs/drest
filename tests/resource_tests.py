@@ -92,7 +92,30 @@ class ResourceTestCase(unittest.TestCase):
         response = api.projects.get(1)
         eq_(response.data['label'], rand_label)
 
+    def test_rest_patch(self):
+        rand_label = "Test Project %s" % random()
+        api = drest.api.TastyPieAPI(MOCKAPI)
+        response = api.projects.get(1)
 
+        new_data = dict()
+        new_data['label'] = rand_label
+        response = api.projects.patch(1, new_data)
+        eq_(response.status, 202)
+        
+        response = api.projects.get(1)
+        eq_(response.data['label'], rand_label)
+        
+        
+    @raises(drest.exc.dRestRequestError)
+    def test_rest_patch_bad(self):
+        api = drest.api.API(MOCKAPI)
+        api.add_resource('users', path='/bogus_path/')
+        try:
+            response = api.users.patch(1)
+        except drest.exc.dRestRequestError as e:
+            eq_(e.msg, 'Received HTTP Code 404 - Not Found (resource: users, id: 1)')
+            raise
+            
     def test_rest_delete(self):
         api = drest.api.TastyPieAPI(MOCKAPI)
         rand_label = "Test Project %s" % random()

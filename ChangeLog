@@ -26,7 +26,8 @@ Bugs:
 Feature Enhancements:
 
     * :issue:`17` - Use relative imports to make drest more portable
-
+    * :issue:`19` - Added PATCH support for default REST resource.
+    
  
 0.9.8 - Jul 02, 2012
 ------------------------------------------------------------------------------
