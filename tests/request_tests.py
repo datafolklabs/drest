@@ -2,6 +2,7 @@
 
 import os
 import unittest
+import mock
 from random import random
 from nose.tools import eq_, raises
 
@@ -64,14 +65,13 @@ class RequestTestCase(unittest.TestCase):
         eq_(req._extra_url_params, dict(username__icontains='ad'))
         response = req.make_request('GET', '%s/users/' % MOCKAPI)
         eq_(response.data['objects'][0]['username'], 'admin')
-    
-    
+
     def test_extra_headers(self):
         req = drest.request.RequestHandler(serialization_handler=None)
         req.add_header('some_key', 'some_value')
         eq_(req._extra_headers, dict(some_key='some_value'))
         response = req.make_request('GET', '%s/users/' % MOCKAPI)
-    
+
     @raises(drest.exc.dRestRequestError)
     def test_handle_response(self):
         req = drest.request.RequestHandler()
@@ -84,7 +84,21 @@ class RequestTestCase(unittest.TestCase):
             raise
 
     def test_ignore_ssl_validation(self):
-        req = drest.request.RequestHandler(serialization_handler=None, 
+        req = drest.request.RequestHandler(serialization_handler=None,
                                            ignore_ssl_validation=True)
         req.make_request('GET', '%s/users/' % MOCKAPI)
-    
+
+    def test_GET_request_allow_get_body_False_empty_parameters(self):
+        """ lighttpd denies GET requests with data in the body by default """
+        class MyRequestHandler(drest.request.RequestHandler):
+            class Meta:
+                allow_get_body = False
+        request = MyRequestHandler()
+        request._get_http = mock.Mock()
+        request._get_http().request.return_value = ({'status': 200}, '')
+        url = '%s/users/' % MOCKAPI
+        request.make_request('GET', url, {"param1": "value1"})
+        headers = {'Content-Type': 'application/json'}
+        request._get_http().request.assert_called_with(url + '?param1=value1',
+                                                       'GET', '',
+                                                       headers=headers)

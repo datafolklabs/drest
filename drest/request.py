@@ -180,6 +180,7 @@ class RequestHandler(meta.MetaMixin):
         serialize = False
         deserialize = True
         trailing_slash = True
+        allow_get_body = True
         
     def __init__(self, **kw):
         super(RequestHandler, self).__init__(**kw)
@@ -387,6 +388,11 @@ class RequestHandler(meta.MetaMixin):
         else:
             payload = urlencode(params)
             
+        if method is 'GET' and not self._meta.allow_get_body:
+            payload = ''
+            if self._meta.debug:
+                print "DREST_DEBUG: supressing body for GET request"
+
         res_headers, data = self._make_request(url, method, payload,
                                                headers=headers)
         unserialized_data = data
