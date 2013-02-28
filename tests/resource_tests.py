@@ -3,8 +3,9 @@
 import os
 import re
 import unittest
+import copy
 from random import random
-from nose.tools import eq_, ok_, raises
+from nose.tools import eq_, ok_, raises, assert_in, assert_not_in
 
 import drest
 from drest.testing import MOCKAPI
@@ -147,3 +148,34 @@ class ResourceTestCase(unittest.TestCase):
         api = drest.api.TastyPieAPI(MOCKAPI)
         eq_(api.users.schema['allowed_list_http_methods'], ['get'])
 
+    def test_tastypie_patch_list(self):
+        api = drest.api.TastyPieAPI(MOCKAPI)
+        api.auth(user='john.doe', api_key='JOHNDOE_API_KEY')
+        # Test Creating:
+        new_project1 = {
+            u'update_date': u'2013-02-27T21:07:26.403343',
+            u'create_date': u'2013-02-27T21:07:26.403323',
+            u'label': u'NewProject1'
+        }
+        new_project2 = {
+            u'update_date': u'2013-02-27T21:07:27.403343',
+            u'create_date': u'2013-02-27T21:07:27.403323',
+            u'label': u'NewProject2'
+        }
+        response = api.projects.patch_list([new_project1, new_project2])
+        eq_(response.status, 202)
+        # filter_ = dict(label__in=["NewProject1", "NewProject2"])
+        projects = api.projects.get().data['objects']
+        # print projects
+        labels = [p["label"] for p in projects]
+        assert_in(new_project1["label"], labels)
+        assert_in(new_project2["label"], labels)
+        new_labels = ["NewProject1", "NewProject2"]
+        new_uris = [p["resource_uri"] for p in projects if p["label"] in new_labels]
+        # Test Deleting:
+        response = api.projects.patch_list([], new_uris)
+        eq_(response.status, 202)
+        projects = api.projects.get().data['objects']
+        labels = [p["label"] for p in projects]
+        assert_not_in("NewProject1", labels)
+        assert_not_in("NewProject2", labels)

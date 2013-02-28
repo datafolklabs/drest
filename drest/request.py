@@ -324,8 +324,9 @@ class RequestHandler(meta.MetaMixin):
                 
         """
         try:
-            return self._get_http().request(url, method, payload, 
-                                            headers=headers)
+            http = self._get_http()
+            return http.request(url, method, payload, headers=headers)
+
         except socket.error as e:
             # Try again just in case there was an issue with the cached _http
             try:
@@ -333,7 +334,8 @@ class RequestHandler(meta.MetaMixin):
                 return self._get_http().request(url, method, payload, 
                                                 headers=headers)
             except socket.error as e:
-                raise exc.dRestAPIError(e.args[1])
+                message = e.args[1] if len(e.args) > 1 else e.args[0]
+                raise exc.dRestAPIError(message)
         
         except ServerNotFoundError as e:
             raise exc.dRestAPIError(e.args[0])
