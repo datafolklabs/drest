@@ -179,6 +179,7 @@ class RequestHandler(meta.MetaMixin):
         serialize = False
         deserialize = True
         trailing_slash = True
+        allow_get_body = True
         
     def __init__(self, **kw):
         super(RequestHandler, self).__init__(**kw)
@@ -322,8 +323,9 @@ class RequestHandler(meta.MetaMixin):
                 
         """
         try:
-            return self._get_http().request(url, method, payload, 
-                                            headers=headers)
+            http = self._get_http()
+            return http.request(url, method, payload, headers=headers)
+
         except socket.error as e:
             # Try again just in case there was an issue with the cached _http
             try:
@@ -331,7 +333,8 @@ class RequestHandler(meta.MetaMixin):
                 return self._get_http().request(url, method, payload, 
                                                 headers=headers)
             except socket.error as e:
-                raise exc.dRestAPIError(e.args[1])
+                message = e.args[1] if len(e.args) > 1 else e.args[0]
+                raise exc.dRestAPIError(message)
         
         except ServerNotFoundError as e:
             raise exc.dRestAPIError(e.args[0])
@@ -386,6 +389,11 @@ class RequestHandler(meta.MetaMixin):
         else:
             payload = urlencode(params)
             
+        if method is 'GET' and not self._meta.allow_get_body:
+            payload = ''
+            if self._meta.debug:
+                print "DREST_DEBUG: supressing body for GET request"
+
         res_headers, data = self._make_request(url, method, payload,
                                                headers=headers)
         unserialized_data = data

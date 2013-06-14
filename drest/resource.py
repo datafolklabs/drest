@@ -270,6 +270,20 @@ class TastyPieResourceHandler(RESTResourceHandler):
         pk = resource_uri.split('/')[-1]
         return self.get(pk, params)
 
+    def patch_list(self, create_objects=[], delete_objects=[]):
+        """
+        Tastypie resources have a patch_list method that allows you to create
+        and delete bulk collections of objects. This uses HTTP PATCH.
+        """
+        # ToDo: support custom collection names
+        collection_name = "objects"
+        delete_collection_name = "deleted_%s" % collection_name
+        data = {
+            collection_name: [self.filter(o) for o in create_objects],
+            delete_collection_name: delete_objects,
+        }
+        return self.api.make_request('PATCH', self.path, data)
+
     @property
     def schema(self):
         """
