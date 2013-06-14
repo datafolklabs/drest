@@ -5,7 +5,7 @@ import re
 import unittest
 import copy
 from random import random
-from nose.tools import eq_, ok_, raises, assert_in, assert_not_in
+from nose.tools import eq_, ok_, raises
 
 import drest
 from drest.testing import MOCKAPI
@@ -164,18 +164,29 @@ class ResourceTestCase(unittest.TestCase):
         }
         response = api.projects.patch_list([new_project1, new_project2])
         eq_(response.status, 202)
-        # filter_ = dict(label__in=["NewProject1", "NewProject2"])
+        
         projects = api.projects.get().data['objects']
-        # print projects
-        labels = [p["label"] for p in projects]
-        assert_in(new_project1["label"], labels)
-        assert_in(new_project2["label"], labels)
-        new_labels = ["NewProject1", "NewProject2"]
-        new_uris = [p["resource_uri"] for p in projects if p["label"] in new_labels]
+        labels = [p['label'] for p in projects]
+        
+        res = new_project1['label'] in labels
+        ok_(res)
+        
+        res = new_project2['label'] in labels
+        ok_(res)
+        
+        new_labels = ['NewProject1', 'NewProject2']
+        new_uris = [p['resource_uri'] for p in projects \
+                                      if p['label'] in new_labels]
+        
         # Test Deleting:
         response = api.projects.patch_list([], new_uris)
         eq_(response.status, 202)
+        
         projects = api.projects.get().data['objects']
-        labels = [p["label"] for p in projects]
-        assert_not_in("NewProject1", labels)
-        assert_not_in("NewProject2", labels)
+        labels = [p['label'] for p in projects]
+        
+        res = 'NewProject1' not in labels
+        ok_(res)
+        
+        res = 'NewProject2' not in labels
+        ok_(res)

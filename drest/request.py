@@ -179,7 +179,7 @@ class RequestHandler(meta.MetaMixin):
         serialize = False
         deserialize = True
         trailing_slash = True
-        allow_get_body = True
+        allow_get_body = False
         
     def __init__(self, **kw):
         super(RequestHandler, self).__init__(**kw)

@@ -37,7 +37,7 @@ Contents:
    
    license
    changelog
-   credits
+   contributors
    api
       
 .. toctree::

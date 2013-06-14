@@ -233,36 +233,39 @@ class TastyPieResourceHandler(RESTResourceHandler):
     
     """ 
     class Meta:
-        request = request.TastyPieRequestHandler
-        schema = None
-        full_url = None
+        """
+        Handler meta-data (can be passed as keyword arguments to the parent
+        class).
         
+        """
+        request = request.TastyPieRequestHandler
+        """The request handler used to make requests.  
+           Default: TastyPieRequestHandler."""
+
+        collection_name = 'objects'
+        """The name of the collection.  Default: objects"""
+
     def __init__(self, api_obj, name, path, **kw):
         super(TastyPieResourceHandler, self).__init__(api_obj, name, path, **kw)
-        
+        self._schema = None
+
     def get_by_uri(self, resource_uri, params={}):
         """
         A wrapper around self.get() that accepts a TastyPie 'resource_uri' 
         rather than a 'pk' (primary key).
         
-        Required Arguments:
+        :param resource_uri: The resource URI to GET.
+        :param params: Any additional keyword arguments are passed as extra 
+         request parameters.
         
-            resource_uri
-                The Resource URI to GET.
-            
-        Optional Arguments
-            
-            params
-                All additional keyword arguments are passed as extra request
-                parameters.
-        
-        Usage
+        Usage:
         
         .. code-block:: python
         
             import drest
             api = drest.api.TastyPieAPI('http://localhost:8000/api/v0/')
-            api.auth(user='john.doe', api_key='34547a497326dde80bcaf8bcee43e3d1b5f24cc9')
+            api.auth(user='john.doe', 
+                     api_key='34547a497326dde80bcaf8bcee43e3d1b5f24cc9')
             response = api.users.get_by_uri('/api/v1/users/234/')
             
         """
@@ -274,12 +277,16 @@ class TastyPieResourceHandler(RESTResourceHandler):
         """
         Tastypie resources have a patch_list method that allows you to create
         and delete bulk collections of objects. This uses HTTP PATCH.
+        
+        :param create_objects: List of objects to create in dict form.
+        :param delete_objects: List of objects to delete in dict form.
+        
         """
-        # ToDo: support custom collection names
-        collection_name = "objects"
-        delete_collection_name = "deleted_%s" % collection_name
+        create_objects = [self.filter(o) for o in create_objects]
+        delete_objects = [self.filter(o) for o in delete_objects]
+        delete_collection_name = "deleted_%s" % self._meta.collection_name
         data = {
-            collection_name: [self.filter(o) for o in create_objects],
+            self._meta.collection_name: create_objects,
             delete_collection_name: delete_objects,
         }
         return self.api.make_request('PATCH', self.path, data)
@@ -290,11 +297,11 @@ class TastyPieResourceHandler(RESTResourceHandler):
         Returns the resources schema.
         
         """
-        if not self._meta.schema:
+        if not self._schema:
             response = self.api.make_request('GET', '%s/schema' % self.path)
-            self._meta.schema = response.data
+            self._schema = response.data
             
-        return self._meta.schema
+        return self._schema
 
 class NestedResource(object):
     pass

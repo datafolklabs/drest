@@ -20,7 +20,16 @@ is available online at:
 0.9.11 - development (will be released as 0.9.12, or 1.0.0)
 ------------------------------------------------------------------------------
 
-None
+Bugs:
+
+    * :issue:`26` - Fixed incorrect reference to serialiser in 
+      TastyPieResourceHandler
+
+Features:
+
+    * :issue:`24` - Allow suppression of body in GET requests.  Default is
+      to not send the `body` in GET requests.
+    * :issue:`25` - Added support for `patch_list` in TastyPieResourceHandler
 
 
 0.9.10 - Jul 18, 2012
