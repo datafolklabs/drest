@@ -9,4 +9,6 @@ def render_null(request):
 urlpatterns = patterns('',
     url(r'^api/', include(v0_api.urls)),
     url(r'^favicon.ico/$', render_null),
+    url(r'^fake_long_request/$', 
+        'mockapi.projects.views.fake_long_request')
 )

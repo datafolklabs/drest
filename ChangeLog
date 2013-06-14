@@ -27,10 +27,11 @@ Bugs:
 
 Features:
 
+    * :issue:`23` - Ability to set request timeout.  Default is to not timeout
     * :issue:`24` - Allow suppression of body in GET requests.  Default is
       to not send the `body` in GET requests.
     * :issue:`25` - Added support for `patch_list` in TastyPieResourceHandler
-
+    
 
 0.9.10 - Jul 18, 2012
 ------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+
 import os
 import sys
 
@@ -170,6 +171,10 @@ class RequestHandler(meta.MetaMixin):
             Boolean.  Whether or not to append a trailing slash to the 
             request url.  Default: True.
             
+        timeout
+            The amount of seconds where a request should timeout.  
+            Default: None
+
     """
     class Meta:
         debug = False
@@ -180,7 +185,8 @@ class RequestHandler(meta.MetaMixin):
         deserialize = True
         trailing_slash = True
         allow_get_body = False
-        
+        timeout = None
+
     def __init__(self, **kw):
         super(RequestHandler, self).__init__(**kw)
         self._extra_params = {}
@@ -286,12 +292,13 @@ class RequestHandler(meta.MetaMixin):
         Returns either the existing (cached) httplib2.Http() object, or
         a new instance of one.
         
-        """        
+        """      
         if self._http == None:
             if self._meta.ignore_ssl_validation:
-                self._http = Http(disable_ssl_certificate_validation=True)
+                self._http = Http(disable_ssl_certificate_validation=True,
+                                  timeout=self._meta.timeout)
             else:
-                self._http = Http()
+                self._http = Http(timeout=self._meta.timeout)
 
             if self._auth_credentials:
                 self._http.add_credentials(self._auth_credentials[0],
@@ -333,8 +340,7 @@ class RequestHandler(meta.MetaMixin):
                 return self._get_http().request(url, method, payload, 
                                                 headers=headers)
             except socket.error as e:
-                message = e.args[1] if len(e.args) > 1 else e.args[0]
-                raise exc.dRestAPIError(message)
+                raise exc.dRestAPIError(e)
         
         except ServerNotFoundError as e:
             raise exc.dRestAPIError(e.args[0])
@@ -379,7 +385,7 @@ class RequestHandler(meta.MetaMixin):
         params = dict(self._extra_params, **params)
         headers = dict(self._extra_headers, **headers)
         url = self._get_complete_url(method, url, params)
-        
+
         if self._meta.debug:
             print('DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
                    (method, url, params, headers))

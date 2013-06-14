@@ -4,7 +4,7 @@ import os
 import unittest
 import mock
 from random import random
-from nose.tools import eq_, raises
+from nose.tools import eq_, ok_, raises
 
 try:
     import json
@@ -35,16 +35,35 @@ class RequestTestCase(unittest.TestCase):
         try:
             response = req.make_request('GET', 'http://localhost/bogus/')
         except drest.exc.dRestAPIError as e:
-            eq_(e.msg, 'Connection refused')
+            res = e.__repr__().find('Connection refused')
+            test_res = res >= 0
+            ok_(test_res)
             raise
     
+    @raises(drest.exc.dRestAPIError)
+    def test_socket_timeout(self):
+        req = drest.request.RequestHandler(timeout=1)
+        try:
+            response = req.make_request(
+                'GET', 
+                'http://localhost:8000/fake_long_request/',
+                params=dict(seconds=10),
+                )
+        except drest.exc.dRestAPIError as e:
+            res = e.__repr__().find('timed out')
+            test_res = res >= 0
+            ok_(test_res)
+            raise
+
     @raises(drest.exc.dRestAPIError)
     def test_server_not_found_error(self):
         req = drest.request.RequestHandler()
         try:
             response = req.make_request('GET', 'http://bogus.example.com/api/')
         except drest.exc.dRestAPIError as e:
-            eq_(e.msg, 'Unable to find the server at bogus.example.com')
+            res = e.__repr__().find('Unable to find the server')
+            test_res = res >= 0
+            ok_(test_res)
             raise
         
     def test_trailing_slash(self):
@@ -88,7 +107,7 @@ class RequestTestCase(unittest.TestCase):
                                            ignore_ssl_validation=True)
         req.make_request('GET', '%s/users/' % MOCKAPI)
 
-    def test_GET_request_allow_get_body_False_empty_parameters(self):
+    def test_get_request_allow_get_body(self):
         """ lighttpd denies GET requests with data in the body by default """
         class MyRequestHandler(drest.request.RequestHandler):
             class Meta:

@@ -71,6 +71,9 @@ class API(meta.MetaMixin):
             parameters of *every* request.  Passed to 
             request_handler.add_extra_url_param().
     
+        timeout
+            The amount of seconds where a request should timeout.  Default: 30
+
     Usage
     
     .. code-block:: python
