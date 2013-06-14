@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-VERSION = '0.9.11'
+VERSION = '0.9.12'
 
 setup(name='drest',
     version=VERSION,
@@ -11,8 +11,8 @@ setup(name='drest',
     classifiers=[], 
     keywords='rest api',
     author='BJ Dierkes',
-    author_email='derks@bjdierkes.com',
-    url='http://github.com/derks/drest/',
+    author_email='derks@datafolklabs.com',
+    url='http://github.com/datafolklabs/drest/',
     license='BSD',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     include_package_data=True,

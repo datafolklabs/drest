@@ -398,7 +398,7 @@ class RequestHandler(meta.MetaMixin):
         if method is 'GET' and not self._meta.allow_get_body:
             payload = ''
             if self._meta.debug:
-                print "DREST_DEBUG: supressing body for GET request"
+                print("DREST_DEBUG: supressing body for GET request")
 
         res_headers, data = self._make_request(url, method, payload,
                                                headers=headers)

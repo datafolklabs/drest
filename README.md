@@ -4,7 +4,7 @@ dRest HTTP/REST Client Library for Python
 dRest is a configurable HTTP/REST client library for Python.  It's goal is to 
 make the creation of API clients dead simple, without lacking features.  
 
-[![Continuous Integration Status](https://secure.travis-ci.org/derks/drest.png)](http://travis-ci.org/derks/drest/)
+[![Continuous Integration Status](https://secure.travis-ci.org/datafolklabs/drest.png)](http://travis-ci.org/datafolklabs/drest/)
 
 Features include:
 
@@ -13,16 +13,16 @@ Features include:
  * Only one external dependency on httplib2
  * Key pieces of the library are customizable by defined handlers
  * Interface definitions ensure handlers are properly implemented
- * Tested against all major versions of Python versions 2.6 through 3.2
+ * Tested against Python versions 2.6, 2.7, 3.2, 3.3
  * 100% test coverage via Nose 
     
 More Information
 ----------------
 
  * RTFD: http://drest.rtfd.org/
- * CODE: http://github.com/derks/drest/
+ * CODE: http://github.com/datafolklabs/drest/
  * PYPI: http://pypi.python.org/pypi/drest/
- * T-CI: http://travis-ci.org/derks/drest/
+ * T-CI: http://travis-ci.org/datafolklabs/drest/
  
 Usage
 -----
