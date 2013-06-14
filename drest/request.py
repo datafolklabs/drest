@@ -1,4 +1,3 @@
-
 import os
 import sys
 
@@ -432,7 +431,7 @@ class TastyPieRequestHandler(RequestHandler):
     class Meta:
         serialize = True
         deserialize = True
-        serialization_handlerf  = serialization.JsonSerializationHandler
+        serialization_handler  = serialization.JsonSerializationHandler
         
     def __init__(self, **kw):
         super(TastyPieRequestHandler, self).__init__(**kw)
