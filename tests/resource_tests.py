@@ -152,16 +152,18 @@ class ResourceTestCase(unittest.TestCase):
         api = drest.api.TastyPieAPI(MOCKAPI)
         api.auth(user='john.doe', api_key='JOHNDOE_API_KEY')
         # Test Creating:
-        new_project1 = {
-            u'update_date': u'2013-02-27T21:07:26.403343',
-            u'create_date': u'2013-02-27T21:07:26.403323',
-            u'label': u'NewProject1'
-        }
-        new_project2 = {
-            u'update_date': u'2013-02-27T21:07:27.403343',
-            u'create_date': u'2013-02-27T21:07:27.403323',
-            u'label': u'NewProject2'
-        }
+        new_project1 = dict(
+            update_date='2013-02-27T21:07:26.403343',
+            create_date='2013-02-27T21:07:26.403323',
+            label='NewProject1'
+            )
+
+        new_project2 = dict(
+            update_date='2013-02-27T21:07:27.403343',
+            create_date='2013-02-27T21:07:27.403323',
+            label='NewProject2'
+            )
+
         response = api.projects.patch_list([new_project1, new_project2])
         eq_(response.status, 202)
         
