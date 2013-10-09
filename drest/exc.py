@@ -8,7 +8,7 @@ class dRestError(Exception):
         return "<dRestError: %s>" % self.msg
     
     def __str__(self):
-        return self.msg
+        return str(self.msg)
     
 class dRestInterfaceError(dRestError):
     """dRest Interface Errors."""

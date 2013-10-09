@@ -33,7 +33,7 @@ class RequestTestCase(unittest.TestCase):
     def test_socket_error(self):
         req = drest.request.RequestHandler()
         try:
-            response = req.make_request('GET', 'http://localhost/bogus/')
+            response = req.make_request('GET', 'http://localhost:8080/bogus/')
         except drest.exc.dRestAPIError as e:
             res = e.__repr__().find('Connection refused')
             test_res = res >= 0
