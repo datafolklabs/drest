@@ -31,10 +31,10 @@ if [ "$1" == "--without-mockapi" ]; then
 else
     echo "Killing drest.mockapi..."
     # Then kill the mock api
-    /bin/ps auxw \
-    | /usr/bin/grep 'DREST_MOCKAPI_PROCESS' \
-    | /usr/bin/awk {' print $2 '} \
-    | /usr/bin/xargs kill 2>/dev/null 1>/dev/null
+    ps auxw \
+    | grep 'DREST_MOCKAPI_PROCESS' \
+    | awk {' print $2 '} \
+    | xargs kill 2>/dev/null 1>/dev/null
 fi
 
 echo

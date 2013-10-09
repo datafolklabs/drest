@@ -33,9 +33,9 @@ class RequestTestCase(unittest.TestCase):
     def test_socket_error(self):
         req = drest.request.RequestHandler()
         try:
-            response = req.make_request('GET', 'http://localhost:8080/bogus/')
+            response = req.make_request('GET', 'http://bogusurl.localhost/')
         except drest.exc.dRestAPIError as e:
-            res = e.__repr__().find('Connection refused')
+            res = e.__repr__().find('Unable to find the server')
             test_res = res >= 0
             ok_(test_res)
             raise
