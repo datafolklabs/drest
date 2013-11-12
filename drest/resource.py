@@ -89,7 +89,7 @@ class RESTResourceHandler(ResourceHandler):
     def __init__(self, api_obj, name, path, **kw):
         super(RESTResourceHandler, self).__init__(api_obj, name, path, **kw)
 
-    def get(self, resource_id=None, params={}):
+    def get(self, resource_id=None, params=None):
         """
         Get all records for a resource, or a single resource record.
         
@@ -102,6 +102,8 @@ class RESTResourceHandler(ResourceHandler):
                 Additional request parameters to pass along.
                 
         """
+        if params is None:
+            params = {}
         if resource_id:
             path = '/%s/%s' % (self.path, resource_id)
         else:
@@ -117,11 +119,14 @@ class RESTResourceHandler(ResourceHandler):
                                         
         return response
     
-    def create(self, params={}):
+    def create(self, params=None):
         """A synonym for self.post()."""
+        if params is None:
+            params = {}
+
         return self.post(params)
         
-    def post(self, params={}):
+    def post(self, params=None):
         """
         Create a new resource.
         
@@ -131,6 +136,9 @@ class RESTResourceHandler(ResourceHandler):
                 A dictionary of parameters (different for every resource).
 
         """
+        if params is None:
+            params = {}
+
         params = self.filter(params)
         path = '/%s' % self.path
         
@@ -142,11 +150,14 @@ class RESTResourceHandler(ResourceHandler):
             
         return response
         
-    def update(self, resource_id, params={}):
+    def update(self, resource_id, params=None):
         """A synonym for self.put()."""
+        if params is None:
+            params = {}
+
         return self.put(resource_id, params)
         
-    def put(self, resource_id, params={}):
+    def put(self, resource_id, params=None):
         """
         Update an existing resource.
         
@@ -159,6 +170,8 @@ class RESTResourceHandler(ResourceHandler):
                 A dictionary of parameters (different for every resource).
                 
         """
+        if params is None:
+            params = {}
                     
         params = self.filter(params)
         path = '/%s/%s' % (self.path, resource_id)
@@ -172,7 +185,7 @@ class RESTResourceHandler(ResourceHandler):
             
         return response
         
-    def patch(self, resource_id, params={}):
+    def patch(self, resource_id, params=None):
         """
         Update only specific items of an existing resource.
         
@@ -185,6 +198,8 @@ class RESTResourceHandler(ResourceHandler):
                 A dictionary of parameters (different for every resource).
                 
         """
+        if params is None:
+            params = {}
                     
         params = self.filter(params)
         path = '/%s/%s' % (self.path, resource_id)
@@ -198,7 +213,7 @@ class RESTResourceHandler(ResourceHandler):
             
         return response
         
-    def delete(self, resource_id, params={}):
+    def delete(self, resource_id, params=None):
         """
         Delete resource record.
         
@@ -216,6 +231,8 @@ class RESTResourceHandler(ResourceHandler):
                 (normally deletion only sets the status to 'Deleted').
             
         """
+        if params is None:
+            params = {}
         path = '/%s/%s' % (self.path, resource_id)
         try:
             response = self.api.make_request('DELETE', path, params)
@@ -249,7 +266,7 @@ class TastyPieResourceHandler(RESTResourceHandler):
         super(TastyPieResourceHandler, self).__init__(api_obj, name, path, **kw)
         self._schema = None
 
-    def get_by_uri(self, resource_uri, params={}):
+    def get_by_uri(self, resource_uri, params=None):
         """
         A wrapper around self.get() that accepts a TastyPie 'resource_uri' 
         rather than a 'pk' (primary key).
@@ -269,6 +286,8 @@ class TastyPieResourceHandler(RESTResourceHandler):
             response = api.users.get_by_uri('/api/v1/users/234/')
             
         """
+        if params is None:
+            params = {}
         resource_uri = resource_uri.rstrip('/')
         pk = resource_uri.split('/')[-1]
         return self.get(pk, params)

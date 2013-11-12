@@ -191,7 +191,11 @@ class API(meta.MetaMixin):
         """
         self.request.set_auth_credentials(user, password)
             
-    def make_request(self, method, path, params={}, headers={}):
+    def make_request(self, method, path, params=None, headers=None):
+        if params is None:
+            params = {}
+        if headers is None:
+            headers = {}
         url = "%s/%s/" % (self.baseurl.strip('/'), path.strip('/'))
         return self.request.make_request(method, url, params, headers)
         
