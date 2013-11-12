@@ -2,7 +2,7 @@
 ChangeLog
 ==============================================================================
 
-All bugs/feature details can be found at: 
+All bugs/feature details can be found at:
 
    https://github.com/derks/drest/issues/XXXXX
 
@@ -17,12 +17,12 @@ is available online at:
     <BR><BR>
 
 
-0.9.11 - development (will be released as 0.9.12, or 1.0.0)
+0.9.12 - Nov 12, 2013
 ------------------------------------------------------------------------------
 
 Bugs:
 
-    * :issue:`26` - Fixed incorrect reference to serialiser in 
+    * :issue:`26` - Fixed incorrect reference to serialiser in
       TastyPieResourceHandler
 
 Features:
@@ -31,7 +31,7 @@ Features:
     * :issue:`24` - Allow suppression of body in GET requests.  Default is
       to not send the `body` in GET requests.
     * :issue:`25` - Added support for `patch_list` in TastyPieResourceHandler
-    
+
 
 0.9.10 - Jul 18, 2012
 ------------------------------------------------------------------------------
@@ -39,75 +39,75 @@ Features:
 Bugs:
 
     * :issue:`20` - Should catch ServerNotFoundError
-    
+
 Feature Enhancements:
 
     * :issue:`17` - Use relative imports to make drest more portable
     * :issue:`19` - Added PATCH support for default REST resource.
-    
- 
+
+
 0.9.8 - Jul 02, 2012
 ------------------------------------------------------------------------------
 
 Bug Fixes:
 
     * :issue:`12` - Params are not added correctly to GET request
-    
+
 Feature Enhancements:
 
     * :issue:`15` - dRestResponse object should include response headers
 
 
-0.9.6 - Mar 23, 2012 
+0.9.6 - Mar 23, 2012
 ------------------------------------------------------------------------------
 
 Bug Fixes:
 
-    - :issue:`9` - GET params incorrectly stored as permanent 
+    - :issue:`9` - GET params incorrectly stored as permanent
       _extra_url_params.
- 
+
 Feature Enhancements:
 
     - :issue:`4` - Better support for nested resource names.
     - :issue:`5`, :issue:`8` - Request object is now exposed publicly.
     - :issue:`6` - Add capability to suppress final forward-slash
     - :issue:`7` - Cache http object for improved performance.
-    
+
 Incompatible Changes:
 
     - api._request is now api.request.  api.request (old function) is now
       api.make_request()
-    
-    - Lots of code refactoring.. numerous minor changes may break 
+
+    - Lots of code refactoring.. numerous minor changes may break
       compatibility if using backend functions, but not likely if accessing
       the high level api functions.
-    
-    - Every request now returns a drest.response.ResponseHandler object 
-      rather than a (response, data) tuple.  
-      
-      
+
+    - Every request now returns a drest.response.ResponseHandler object
+      rather than a (response, data) tuple.
+
+
 0.9.4 - Feb 16, 2012
 ------------------------------------------------------------------------------
 
 Bug Fixes:
 
     - :issue:`3` - TypeError: object.__init__() takes no parameters
- 
+
 Feature Enhancements:
 
     - Improved test suite, now powered by Django TastyPie!
     - Added support for Basic HTTP Auth.
-    
+
 Incompatible Changes:
 
     - drest.api.API.auth() now implements Basic HTTP Auth by default rather
       than just appending the user/password/etc to the URL.
-    
-    
+
+
 .. raw:: html
 
     <BR><BR>
-    
+
 0.9.2 - Feb 01, 2012
 ------------------------------------------------------------------------------
 
