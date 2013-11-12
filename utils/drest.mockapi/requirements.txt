@@ -2,3 +2,4 @@ django
 django-tastypie
 python-digest
 mimeparse
+mock
