@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-VERSION = '0.9.12'
+VERSION = '0.9.13'
 
 setup(name='drest',
     version=VERSION,
