@@ -98,7 +98,7 @@ class IRequest(interface.Interface):
                 
         """
     
-    def make_request(method, path, params={}, headers={}):
+    def make_request(method, path, params=None, headers=None):
         """
         Make a request with the upstream API.
         
@@ -115,11 +115,11 @@ class IRequest(interface.Interface):
         Optional Arguments:
         
             params
-                Parameters to pass with the request.  These will be serialized
+                Dictionary of parameters to pass with the request.  These will be serialized
                 if configured to serialize.
             
             headers
-                Headers to pass to the request.
+                Dictionary of headers to pass to the request.
                 
         """
     
@@ -308,7 +308,7 @@ class RequestHandler(meta.MetaMixin):
     def _clear_http(self):
         self._http = None
             
-    def _make_request(self, url, method, payload={}, headers={}): 
+    def _make_request(self, url, method, payload=None, headers=None):
         """
         A wrapper around httplib2.Http.request.
         
@@ -329,6 +329,11 @@ class RequestHandler(meta.MetaMixin):
                 Additional headers of the request.
                 
         """
+        if payload is None:
+            payload = {}
+        if headers is None:
+            headers = {}
+
         try:
             http = self._get_http()
             return http.request(url, method, payload, headers=headers)
@@ -358,7 +363,7 @@ class RequestHandler(meta.MetaMixin):
             
         return url
         
-    def make_request(self, method, url, params={}, headers={}):
+    def make_request(self, method, url, params=None, headers=None):
         """
         Make a call to a resource based on path, and parameters.
     
@@ -382,6 +387,10 @@ class RequestHandler(meta.MetaMixin):
                 Dictionary of additional (one-time) headers of the request.
                 
         """   
+        if params is None:
+            params = {}
+        if headers is None:
+            headers = {}
         params = dict(self._extra_params, **params)
         headers = dict(self._extra_headers, **headers)
         url = self._get_complete_url(method, url, params)

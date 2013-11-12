@@ -52,7 +52,9 @@ b) what functionality you need to maintain.
         class Meta:
             request_handler = MyRequestHandler
     
-        def some_custom_function(self, params={}):
+        def some_custom_function(self, params=None):
+            if params is None:
+                params = {}
             # do some kind of custom api call
             return self.request('GET', '/users/some_custom_function', params)
 
