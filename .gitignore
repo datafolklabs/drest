@@ -30,3 +30,5 @@ coverage_report/
 test.py
 .idea/
 utils/drest.mockapi/src/
+mockapi.err
+mockapi.out
