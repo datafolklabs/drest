@@ -78,6 +78,15 @@ class RequestTestCase(unittest.TestCase):
         eq_(req._extra_params, params)
         response = req.make_request('POST', '%s/projects/' % MOCKAPI, params)
 
+    def test_payload_and_headers_are_none(self):
+        req = drest.request.TastyPieRequestHandler()
+        response = req._make_request('%s/projects/' % MOCKAPI, 'GET',
+                                     payload=None, headers=None)
+
+        req = drest.request.TastyPieRequestHandler(serialize=False)
+        response = req._make_request('%s/projects/' % MOCKAPI, 'GET',
+                                     payload=None, headers=None)
+
     def test_extra_url_params(self):
         req = drest.request.RequestHandler()
         req.add_url_param('username__icontains', 'ad')
