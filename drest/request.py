@@ -395,15 +395,16 @@ class RequestHandler(meta.MetaMixin):
         headers = dict(self._extra_headers, **headers)
         url = self._get_complete_url(method, url, params)
 
-        if self._meta.debug:
-            print('DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
-                   (method, url, params, headers))
-
         if self._meta.serialize: 
             payload = self._serialize(params)
         else:
             payload = urlencode(params)
-            
+
+        if self._meta.debug:
+            print('DREST_DEBUG: method=%s url=%s params=%s headers=%s' % \
+                   (method, url, payload, headers))
+
+
         if method is 'GET' and not self._meta.allow_get_body:
             payload = ''
             if self._meta.debug:
