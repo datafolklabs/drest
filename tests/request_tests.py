@@ -10,7 +10,7 @@ try:
     import json
 except ImportError as e:
     import simplejson as json
-        
+
 import drest
 from drest.testing import MOCKAPI
 
@@ -39,13 +39,13 @@ class RequestTestCase(unittest.TestCase):
             test_res = res >= 0
             ok_(test_res)
             raise
-    
+
     @raises(drest.exc.dRestAPIError)
     def test_socket_timeout(self):
         req = drest.request.RequestHandler(timeout=1)
         try:
             response = req.make_request(
-                'GET', 
+                'GET',
                 'http://localhost:8000/fake_long_request/',
                 params=dict(seconds=10),
                 )
@@ -65,11 +65,11 @@ class RequestTestCase(unittest.TestCase):
             test_res = res >= 0
             ok_(test_res)
             raise
-        
+
     def test_trailing_slash(self):
         req = drest.request.RequestHandler(trailing_slash=False)
         response = req.make_request('GET', '%s/users/1/' % MOCKAPI)
-    
+
     def test_extra_params(self):
         params = {}
         params['label'] = "Project Label %s" % random()
@@ -108,16 +108,18 @@ class RequestTestCase(unittest.TestCase):
         req.make_request('GET', '%s/users/' % MOCKAPI)
 
     def test_get_request_allow_get_body(self):
-        """ lighttpd denies GET requests with data in the body by default """
+        # lighttpd denies GET requests with data in the body by default
         class MyRequestHandler(drest.request.RequestHandler):
             class Meta:
                 allow_get_body = False
+
         request = MyRequestHandler()
         request._get_http = mock.Mock()
         request._get_http().request.return_value = ({'status': 200}, '')
         url = '%s/users/' % MOCKAPI
         request.make_request('GET', url, {"param1": "value1"})
         headers = {'Content-Type': 'application/json'}
-        request._get_http().request.assert_called_with(url + '?param1=value1',
-                                                       'GET', '',
-                                                       headers=headers)
+
+        url = url + '?param1=value1'
+        request._get_http()\
+               .request.assert_called_with(url, 'GET', '', headers=headers)
